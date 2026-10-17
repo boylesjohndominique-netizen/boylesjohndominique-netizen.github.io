@@ -572,7 +572,12 @@
             <button class="btn btn--ghost dodge-btn" id="loveNo" type="button">No...</button>
           </div>
 
-          <div class="game-response" id="gameResponse" role="status" aria-live="polite"></div>
+          <div class="game-response" id="gameResponse" role="status" aria-live="polite" hidden>
+            <img class="game-response__face" id="gameResponseFace"
+              src="assets/icons/cat-no-meme/cat-angry.png" alt="" aria-hidden="true"
+              width="512" height="512" decoding="async" hidden>
+            <span class="game-response__text" id="gameResponseText"></span>
+          </div>
           <button class="link-btn" id="skipGame" type="button">Skip this silly game →</button>
         </div>
       </div>

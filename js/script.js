@@ -1056,13 +1056,61 @@
   const loveNo = $("#loveNo");
   const loveYes = $("#loveYes");
   const gameResponse = $("#gameResponse");
+  const gameResponseFace = $("#gameResponseFace");
+  const gameResponseText = $("#gameResponseText");
   const skipGame = $("#skipGame");
   let lastPointerType = "mouse";
   let lastDodgeTime = 0;
 
-  function showGameResponse(message, isLove) {
-    gameResponse.textContent = message;
+  const LOVE_IMAGE = "assets/icons/cat-hand-heart.png";
+
+  // Rotating reactions for every "No..." tap, so it never feels repetitive.
+  const NO_REACTIONS = [
+    {
+      image: "assets/icons/cat-no-meme/cat-angry.png",
+      text: "Hey! That button is not an option, baby. 😤"
+    },
+    {
+      image: "assets/icons/cat-no-meme/cat-angry2.png",
+      text: "Nope, nope. You're stuck with me forever. 😠💗"
+    },
+    {
+      image: "assets/icons/cat-no-meme/cat-bleeh.png",
+      text: "Blehh! Nice try, but “No” isn't in our vocabulary. 😝"
+    },
+    {
+      image: "assets/icons/cat-no-meme/cat-brokenheart.png",
+      text: "My heart! You really tried to press that? 🥺💔"
+    },
+    {
+      image: "assets/icons/cat-no-meme/cat-crying.png",
+      text: "Waaah! That one hurt a little. Pick yes, babyy. 😭💗"
+    },
+    {
+      image: "assets/icons/cat-no-meme/cat-crying2.png",
+      text: "Crying in five languages over here. You love me, right? 🥺💗"
+    }
+  ];
+
+  let noReactionIndex = 0;
+
+  function showGameResponse(message, isLove, image) {
+    gameResponseText.textContent = message;
     gameResponse.classList.toggle("is-love", Boolean(isLove));
+    gameResponse.hidden = false;
+
+    if (image) {
+      gameResponseFace.src = image;
+      gameResponseFace.hidden = false;
+    } else {
+      gameResponseFace.hidden = true;
+    }
+  }
+
+  function showNoReaction() {
+    const reaction = NO_REACTIONS[noReactionIndex % NO_REACTIONS.length];
+    noReactionIndex += 1;
+    showGameResponse(reaction.text, false, reaction.image);
   }
 
   function moveNoButton() {
@@ -1077,10 +1125,13 @@
     loveNo.style.top = `${y}%`;
     dodgeField.classList.add("has-moved");
 
+    showNoReaction();
+
     if (state.dodges >= 5) {
       loveNo.classList.add("is-tired");
       loveNo.setAttribute("aria-label", "No... (the button has officially given up running)");
-      showGameResponse("Even the “No...” button is out of breath. My love, however, is not. 😂💗");
+      gameResponseText.textContent =
+        "Even the “No...” button is out of breath. My love, however, is not. 😂💗";
     }
   }
 
@@ -1102,14 +1153,14 @@
 
   loveNo.addEventListener("click", (event) => {
     if (state.gameDone) {
-      showGameResponse("Nice try, baby. You can't escape this much love! 😂💗", true);
+      showGameResponse("Nice try, baby. You can't escape this much love! 😂💗", true, LOVE_IMAGE);
       return;
     }
 
     const isKeyboard = event.detail === 0;
 
     if (isKeyboard || lastPointerType !== "touch") {
-      showGameResponse("Nice try, baby. You can't escape this much love! 😂💗", true);
+      showNoReaction();
       burstFromElement(loveNo, 20);
       return;
     }
@@ -1117,9 +1168,8 @@
     // Touch-friendly fallback: a small escape, then a playful message.
     if (state.dodges < 3) {
       moveNoButton();
-      showGameResponse("The button moved! It's shy. Try tapping again, baby. 😂💗");
     } else {
-      showGameResponse("Nice try, baby. You can't escape this much love! 😂💗", true);
+      showGameResponse("Nice try, baby. You can't escape this much love! 😂💗", true, LOVE_IMAGE);
       burstFromElement(loveNo, 18);
     }
   });
@@ -1129,7 +1179,7 @@
     loveYes.disabled = true;
     loveYes.textContent = "I love you too, babyy! 💗";
     dodgeField.hidden = true;
-    showGameResponse("I knew it. Of course you do — and I love you more, babyy. 💗", true);
+    showGameResponse("I knew it. Of course you do — and I love you more, babyy. 💗", true, LOVE_IMAGE);
     burstFromElement(loveYes, 30);
   });
 
@@ -1148,8 +1198,12 @@
     loveNo.setAttribute("aria-label", "No...");
     loveYes.disabled = false;
     loveYes.textContent = "Of course, babyy!";
-    gameResponse.textContent = "";
+    gameResponse.hidden = true;
     gameResponse.classList.remove("is-love");
+    gameResponseText.textContent = "";
+    gameResponseFace.src = NO_REACTIONS[0].image;
+    gameResponseFace.hidden = false;
+    noReactionIndex = 0;
     lastPointerType = "mouse";
     lastDodgeTime = 0;
   }

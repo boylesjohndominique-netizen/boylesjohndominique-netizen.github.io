@@ -2980,7 +2980,7 @@ main {
   margin-top: 4px;
 }
 
-.game-response:not(:empty) {
+.game-response:not([hidden]) {
   margin-top: 22px;
   padding: 18px 22px;
   border-radius: 18px;
@@ -2989,6 +2989,18 @@ main {
   color: var(--burgundy);
   font-weight: 600;
   animation: response-in 0.4s ease both;
+}
+
+.game-response__face {
+  display: block;
+  width: clamp(72px, 18vw, 96px);
+  height: auto;
+  margin: 0 auto 12px;
+  filter: drop-shadow(0 8px 12px rgba(156, 48, 73, 0.2));
+}
+
+.game-response__text {
+  display: block;
 }
 
 .game-response.is-love {
@@ -3878,7 +3890,7 @@ main {
     height: 160px;
   }
 
-  .game-response:not(:empty) {
+  .game-response:not([hidden]) {
     font-size: 0.92rem;
   }
 
