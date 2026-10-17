@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fbf4ea">
+  <meta name="description" content="A little birthday surprise made with love for Wyn Keysha Gonzales. October 24, 2026.">
+  <title>A Little Something for Wyn Keysha 💗</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%97%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <noscript>
+    <p class="noscript">This little surprise needs JavaScript to open. Please enable it in your browser and refresh the page. 💗</p>
+  </noscript>
+
+  <div class="ambient" aria-hidden="true">
+    <span class="ambient__wash ambient__wash--rose"></span>
+    <span class="ambient__wash ambient__wash--lavender"></span>
+    <span class="ambient__wash ambient__wash--peach"></span>
+    <div class="ambient__hearts">
+      <span>&hearts;</span><span>&hearts;</span><span>&hearts;</span><span>&hearts;</span>
+      <span>&hearts;</span><span>&hearts;</span><span>&hearts;</span><span>&hearts;</span>
+    </div>
+  </div>
+
+  <div class="particle-layer" id="particleLayer" aria-hidden="true"></div>
+
+  <header class="topbar" id="topbar" hidden>
+    <div class="topbar__inner">
+      <button class="brand" id="brandBtn" type="button">
+        <span class="brand__mark">W<span class="brand__heart" aria-hidden="true">&hearts;</span>J</span>
+        <span class="brand__home">Home</span>
+        <span class="sr-only">— go to the birthday surprise. Tap five times for a hidden note.</span>
+      </button>
+
+      <div class="chapter-progress" role="group" aria-label="Chapter progress">
+        <span class="chapter-progress__label" id="chapterLabel">Chapter 1 of 8</span>
+        <span class="chapter-progress__short" id="chapterShort" aria-hidden="true">1/8</span>
+        <span class="chapter-progress__track" aria-hidden="true">
+          <span class="chapter-progress__fill" id="chapterFill"></span>
+        </span>
+      </div>
+
+      <button class="music-toggle" id="musicToggle" type="button" data-music-toggle
+        aria-pressed="false" aria-label="Music — play background music">
+        <svg class="music-toggle__note" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M9 18.5a3.5 3.5 0 1 1-2-3.16V5.2a1 1 0 0 1 .76-.97l9-2.25A1 1 0 0 1 18 2.95v12.3a3.5 3.5 0 1 1-2-3.16V6.9L9 8.65Z"/>
+        </svg>
+        <span class="music-toggle__text" data-music-label>Music</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- ============================================================
+         SCREEN 1 — WELCOME
+    ============================================================= -->
+    <section class="screen screen--gate is-active" id="screen-welcome" data-screen="welcome"
+      aria-labelledby="welcome-title">
+      <div class="wrap gate-grid">
+        <div class="gate-copy">
+          <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span> A little corner of the internet, just for you</p>
+          <h1 class="display display--xl" id="welcome-title" tabindex="-1">
+            A Little Something for <em>My Favorite Person</em>
+          </h1>
+          <p class="lede">
+            I made you a small place full of us — our memories, our silly jokes,
+            and a few surprises hiding in the corners. There's something special waiting inside. 💌
+          </p>
+          <div class="welcome-actions">
+            <button class="btn btn--primary btn--lg" id="openSurprise" type="button">
+              Open Your Surprise <span class="btn__arrow" aria-hidden="true">→</span>
+            </button>
+            <p class="micro">No rush. It'll wait right here for you.</p>
+          </div>
+        </div>
+
+        <div class="gate-visual">
+          <div class="envelope-wrap">
+            <span class="washi washi--welcome" aria-hidden="true"></span>
+            <div class="envelope" aria-hidden="true">
+              <div class="envelope__back"></div>
+              <div class="envelope__note">
+                <span class="handwritten envelope__note-title">For my<br>Keysha</span>
+                <span class="envelope__note-heart">&hearts;</span>
+                <span class="envelope__note-line"></span>
+                <span class="envelope__note-line envelope__note-line--short"></span>
+              </div>
+              <div class="envelope__pocket"></div>
+              <div class="envelope__flap"></div>
+              <div class="envelope__seal">W<span>&hearts;</span>J</div>
+            </div>
+            <span class="sparkle sparkle--one" aria-hidden="true">✦</span>
+            <span class="sparkle sparkle--two" aria-hidden="true">✦</span>
+            <span class="sparkle sparkle--three" aria-hidden="true">♡</span>
+            <div class="envelope-tag handwritten">open me, babyy</div>
+          </div>
+        </div>
+      </div>
+      <p class="gate-footer">For Wyn Keysha Gonzales · October 24, 2026</p>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 2 — IDENTITY CONFIRMATION
+    ============================================================= -->
+    <section class="screen screen--gate" id="screen-identity" data-screen="identity" hidden
+      aria-labelledby="identity-title">
+      <div class="wrap gate-center">
+        <div class="card card--narrow question-card" id="identityCard">
+          <p class="eyebrow">Before we begin</p>
+          <h2 class="display display--md" id="identity-title" tabindex="-1">
+            Wait a second...<br>Are you <em>Wyn Keysha Gonzales?</em>
+          </h2>
+          <p class="muted question-card__sub">
+            I have to make sure this little surprise lands in the right hands. 💗
+          </p>
+
+          <div class="identity-actions" id="identityActions">
+            <button class="btn btn--primary btn--lg" id="yesBtn" type="button">Yes, that's me!</button>
+            <button class="btn btn--ghost btn--lg" id="noBtn" type="button">Nope!</button>
+          </div>
+
+          <div class="inline-response inline-response--warn" id="identityResponse" hidden tabindex="-1">
+            <span class="inline-response__face" id="identityResponseFace" aria-hidden="true">😤💗</span>
+            <p id="identityResponseText">Excuse me?! You're not my baby. This little surprise is reserved for Wyn Keysha Gonzales! 😤💗</p>
+            <button class="btn btn--primary" id="retryIdentity" type="button">Okay, let me try again</button>
+          </div>
+        </div>
+        <p class="gate-footnote">Just a sweet little check-in between us — not real security, only love.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 3 — SECRET QUESTION
+    ============================================================= -->
+    <section class="screen screen--gate" id="screen-secret" data-screen="secret" hidden
+      aria-labelledby="secret-title">
+      <div class="wrap gate-center">
+        <div class="card card--narrow question-card" id="secretCard">
+          <p class="eyebrow">The real test</p>
+          <h2 class="display display--md" id="secret-title" tabindex="-1">
+            If you're really my Keysha,<br>then <em>who am I?</em>
+          </h2>
+          <p class="muted question-card__sub">
+            You know this one. I believe in you. 😌
+          </p>
+
+          <form id="secretForm" novalidate>
+            <label class="field-label" for="secretAnswer">Type my name, or the name you call me</label>
+            <div class="input-row">
+              <input class="text-input" id="secretAnswer" name="answer" type="text"
+                placeholder="Type my name or the name you call me..."
+                autocomplete="off" autocapitalize="words" spellcheck="false"
+                aria-describedby="secretHelp secretFeedback" required>
+              <button class="btn btn--primary" id="unlockBtn" type="submit">Unlock 💗</button>
+            </div>
+            <p class="field-help" id="secretHelp">
+              Tiny clue: I'm the one who approached you first on Instagram Notes. 😌
+            </p>
+            <p class="form-feedback" id="secretFeedback" role="status"></p>
+          </form>
+
+          <button class="link-btn" id="hintBtn" type="button" aria-expanded="false" aria-controls="hintText">
+            Need a tiny hint?
+          </button>
+          <p class="hint-text" id="hintText" tabindex="-1" hidden>
+            It's the name of the boy who built this whole website for you.
+            Or the two-syllable name you call me when you're being sweet. 💗
+          </p>
+        </div>
+
+        <div class="card card--narrow success-card" id="secretSuccess" hidden>
+          <div class="success-burst" aria-hidden="true">
+            <span class="success-burst__ring"></span>
+            <span class="success-burst__heart">💗</span>
+          </div>
+          <p class="eyebrow">Access granted, my love</p>
+          <h2 class="display display--md" id="secretSuccessTitle" tabindex="-1">
+            Okay, you passed, babyy.<br><em>This surprise is for you.</em> 💗
+          </h2>
+          <p class="lede">I knew it was you. Come in — I saved the best parts for my favorite person.</p>
+          <button class="btn btn--primary btn--lg" id="enterSurprise" type="button">
+            Step inside 💗
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 4 — BIRTHDAY REVEAL
+    ============================================================= -->
+    <section class="screen screen--experience" id="screen-reveal" data-screen="reveal"
+      data-chapter="reveal" aria-labelledby="reveal-title" hidden>
+      <div class="wrap">
+        <div class="reveal-hero">
+          <div class="reveal-copy">
+            <p class="eyebrow eyebrow--rose">
+              <button class="date-chip" id="dateBtn" type="button"
+                aria-label="October 24, 2026 — tap three times for a tiny surprise">October 24, 2026</button>
+              <span class="eyebrow__dot" aria-hidden="true"></span> a very important day
+            </p>
+            <h1 class="display display--xl" id="reveal-title" tabindex="-1">
+              Happy Birthday,<br><em>My Wyn Keysha!</em> <span class="heart-beat" aria-hidden="true">💗</span>
+            </h1>
+            <p class="lede reveal-lede">
+              Today is all about you — my favorite person, my favorite notification,
+              and the best thing that ever came out of an Instagram Note.
+              I made this little world for you, so take your time and look around.
+              Every chapter is something I love about us.
+            </p>
+
+            <div class="hero-actions">
+              <button class="btn btn--primary btn--lg" data-go="letter" type="button">
+                Read Your Letter <span class="btn__arrow" aria-hidden="true">→</span>
+              </button>
+              <button class="btn btn--ghost" data-go="memories" type="button">
+                Peek at our scrapbook
+              </button>
+            </div>
+
+            <div class="countdown card" id="countdown" role="group" aria-labelledby="countdownLabel">
+              <div class="countdown__head">
+                <span class="countdown__label" id="countdownLabel">Counting down to your day</span>
+                <span class="countdown__tz">Manila time</span>
+              </div>
+              <div class="countdown__grid" id="countdownGrid">
+                <div class="countdown__unit"><span class="countdown__value" id="cdDays">--</span><span class="countdown__small">days</span></div>
+                <div class="countdown__unit"><span class="countdown__value" id="cdHours">--</span><span class="countdown__small">hours</span></div>
+                <div class="countdown__unit"><span class="countdown__value" id="cdMinutes">--</span><span class="countdown__small">minutes</span></div>
+                <div class="countdown__unit"><span class="countdown__value" id="cdSeconds">--</span><span class="countdown__small">seconds</span></div>
+              </div>
+              <p class="countdown__message" id="countdownMessage" hidden></p>
+            </div>
+          </div>
+
+          <div class="reveal-art">
+            <div class="art-card">
+              <span class="art-card__glow" aria-hidden="true"></span>
+              <svg class="cake-art" viewBox="0 0 420 420" role="img" aria-label="A two-tier birthday cake with candles and hearts">
+                <defs>
+                  <linearGradient id="plateGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#fffaf2"/>
+                    <stop offset="1" stop-color="#eadccd"/>
+                  </linearGradient>
+                  <linearGradient id="tierBottom" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#e9b1a5"/>
+                    <stop offset="1" stop-color="#cf7d76"/>
+                  </linearGradient>
+                  <linearGradient id="tierTop" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#f6d9d5"/>
+                    <stop offset="1" stop-color="#e6afa8"/>
+                  </linearGradient>
+                  <linearGradient id="icing" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#fffdf7"/>
+                    <stop offset="1" stop-color="#f8ebdf"/>
+                  </linearGradient>
+                  <radialGradient id="flameGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0" stop-color="#ffd88a" stop-opacity=".95"/>
+                    <stop offset="1" stop-color="#ffb35c" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+
+                <circle cx="210" cy="200" r="172" fill="#fff7ee" opacity=".65"/>
+                <circle cx="210" cy="200" r="147" fill="none" stroke="#d9b9a8" stroke-width="1" stroke-dasharray="3 9"/>
+                <ellipse cx="210" cy="352" rx="166" ry="28" fill="#d9bfae" opacity=".5"/>
+                <ellipse cx="210" cy="343" rx="160" ry="24" fill="url(#plateGrad)"/>
+
+                <!-- bottom tier -->
+                <rect x="92" y="236" width="236" height="92" rx="20" fill="url(#tierBottom)"/>
+                <path d="M92 255c14 15 26 15 40 0s26-15 40 0 26 15 40 0 26-15 40 0 26 15 40 0 26-15 36-4v-21H92Z" fill="url(#icing)"/>
+                <text x="210" y="307" text-anchor="middle" font-family="Georgia, serif" font-size="38" font-style="italic" fill="#8e4350">24</text>
+                <circle cx="116" cy="294" r="3" fill="#f6d9d5" opacity=".9"/>
+                <circle cx="304" cy="294" r="3" fill="#f6d9d5" opacity=".9"/>
+                <circle cx="132" cy="320" r="2.5" fill="#f6d9d5" opacity=".75"/>
+                <circle cx="288" cy="320" r="2.5" fill="#f6d9d5" opacity=".75"/>
+
+                <!-- top tier -->
+                <rect x="138" y="162" width="144" height="78" rx="16" fill="url(#tierTop)"/>
+                <path d="M138 179c11 12 21 12 32 0s21-12 32 0 21 12 32 0 21-12 32 0 21 12 16 1v-18H138Z" fill="url(#icing)"/>
+                <path d="M156 205c0 5 4 9 9 9s9-4 9-9" fill="none" stroke="#b9636c" stroke-width="1.5" opacity=".5"/>
+                <path d="M246 205c0 5 4 9 9 9s9-4 9-9" fill="none" stroke="#b9636c" stroke-width="1.5" opacity=".5"/>
+
+                <!-- candles -->
+                <g>
+                  <ellipse cx="170" cy="152" rx="15" ry="12" fill="url(#flameGlow)"/>
+                  <rect x="165" y="112" width="10" height="48" rx="5" fill="#fffaf3"/>
+                  <rect x="165" y="120" width="10" height="5" fill="#d9878e"/>
+                  <rect x="165" y="134" width="10" height="5" fill="#d9878e"/>
+                  <path d="M170 101c7 8 5 14 0 15-5-1-7-7 0-15Z" fill="#f2b45f"/>
+                  <path d="M170 106c3 4 2 7 0 8-2-1-3-4 0-8Z" fill="#fff4cf"/>
+                </g>
+                <g>
+                  <ellipse cx="210" cy="142" rx="15" ry="12" fill="url(#flameGlow)"/>
+                  <rect x="205" y="102" width="10" height="48" rx="5" fill="#fffaf3"/>
+                  <rect x="205" y="110" width="10" height="5" fill="#d9878e"/>
+                  <rect x="205" y="124" width="10" height="5" fill="#d9878e"/>
+                  <path d="M210 91c7 8 5 14 0 15-5-1-7-7 0-15Z" fill="#f2b45f"/>
+                  <path d="M210 96c3 4 2 7 0 8-2-1-3-4 0-8Z" fill="#fff4cf"/>
+                </g>
+                <g>
+                  <ellipse cx="250" cy="152" rx="15" ry="12" fill="url(#flameGlow)"/>
+                  <rect x="245" y="112" width="10" height="48" rx="5" fill="#fffaf3"/>
+                  <rect x="245" y="120" width="10" height="5" fill="#d9878e"/>
+                  <rect x="245" y="134" width="10" height="5" fill="#d9878e"/>
+                  <path d="M250 101c7 8 5 14 0 15-5-1-7-7 0-15Z" fill="#f2b45f"/>
+                  <path d="M250 106c3 4 2 7 0 8-2-1-3-4 0-8Z" fill="#fff4cf"/>
+                </g>
+
+                <!-- decorations -->
+                <path d="M310 120c0-9 13-9 13 0 0 7-7 10-13 17-6-7-13-10-13-17 0-9 13-9 13 0Z" fill="#c2566b" opacity=".75"/>
+                <path d="M89 158c0-7 10-7 10 0 0 5-5 8-10 13-5-5-10-8-10-13 0-7 10-7 10 0Z" fill="#b7a4d4" opacity=".8"/>
+                <path d="M78 96l3.5 8 8 3.5-8 3.5-3.5 8-3.5-8-8-3.5 8-3.5L78 96Z" fill="#c99b4e" opacity=".9"/>
+                <path d="M335 210l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5 2.5-6Z" fill="#c99b4e" opacity=".75"/>
+                <circle cx="118" cy="126" r="3.5" fill="#d4a0a6"/>
+                <circle cx="320" cy="150" r="3" fill="#d4a0a6"/>
+              </svg>
+              <div class="art-card__caption">
+                <span class="handwritten">my favorite person,<br>born on the 24th</span>
+                <span class="art-card__heart" aria-hidden="true">&hearts;</span>
+              </div>
+              <span class="washi washi--art" aria-hidden="true"></span>
+            </div>
+            <p class="art-note handwritten">psst... the whole site is your gift</p>
+          </div>
+        </div>
+
+        <section class="music-card boombox" id="musicCard" aria-labelledby="musicCardTitle">
+          <span class="boombox__handle" aria-hidden="true"></span>
+
+          <div class="boombox__deck">
+            <div class="boombox__well">
+              <div class="boombox__vinyl" aria-hidden="true">
+                <span class="boombox__vinyl-label">W<span class="boombox__vinyl-heart">♥</span>J</span>
+              </div>
+              <span class="boombox__tonearm" aria-hidden="true"></span>
+            </div>
+            <div class="boombox__speaker" aria-hidden="true">
+              <span class="boombox__grille"></span>
+            </div>
+          </div>
+
+          <div class="boombox__panel">
+            <div class="boombox__plate">
+              <h2 class="music-card__title" id="musicCardTitle">Our little soundtrack</h2>
+              <span class="boombox__brand" aria-hidden="true">W♥J · stereo</span>
+            </div>
+
+            <div class="boombox__display">
+              <span class="boombox__led" aria-hidden="true"></span>
+              <div class="boombox__readout">
+                <p class="music-now" id="musicNow" hidden><strong id="musicNowTitle"></strong></p>
+                <p class="music-status" id="musicStatus" role="status">Music is off. Press play whenever you're ready, babyy.</p>
+              </div>
+            </div>
+
+            <div class="music-controls">
+              <button class="music-skip" id="musicPrev" type="button" aria-label="Previous song">
+                <span aria-hidden="true">⏮</span>
+              </button>
+
+              <button class="music-btn music-btn--play" type="button" data-music-toggle aria-pressed="false">
+                <span class="music-btn__icons" aria-hidden="true">
+                  <svg class="music-btn__icon music-btn__icon--play" viewBox="0 0 24 24" focusable="false"><path d="M8 5.4v13.2L19 12z"/></svg>
+                  <svg class="music-btn__icon music-btn__icon--pause" viewBox="0 0 24 24" focusable="false"><path d="M7 5.4h3.6v13.2H7zM13.4 5.4H17v13.2h-3.6z"/></svg>
+                </span>
+                <span class="sr-only" data-music-label>Play music</span>
+              </button>
+
+              <button class="music-skip" id="musicNext" type="button" aria-label="Next song">
+                <span aria-hidden="true">⏭</span>
+              </button>
+
+              <label class="volume-control">
+                <span class="volume-control__icon" aria-hidden="true">🔈</span>
+                <span class="sr-only">Music volume</span>
+                <input type="range" id="volumeRange" min="0" max="100" value="45" step="1">
+                <span class="volume-control__value" id="volumeValue">45%</span>
+              </label>
+            </div>
+
+            <ul class="tracklist" id="trackList" aria-label="Our soundtrack"></ul>
+          </div>
+        </section>
+
+        <div class="inside-strip">
+          <p class="inside-strip__label">What's inside</p>
+          <div class="chips">
+            <button class="chapter-chip" data-go="letter" type="button"><span aria-hidden="true">01</span> Your letter</button>
+            <button class="chapter-chip" data-go="memories" type="button"><span aria-hidden="true">02</span> Our scrapbook</button>
+            <button class="chapter-chip" data-go="reasons" type="button"><span aria-hidden="true">03</span> Little reasons</button>
+            <button class="chapter-chip" data-go="love" type="button"><span aria-hidden="true">04</span> Love meter</button>
+            <button class="chapter-chip" data-go="game" type="button"><span aria-hidden="true">05</span> A silly game</button>
+            <button class="chapter-chip" data-go="gift" type="button"><span aria-hidden="true">06</span> Your gift</button>
+            <button class="chapter-chip" data-go="final" type="button"><span aria-hidden="true">07</span> One last thing</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 5 — LETTER
+    ============================================================= -->
+    <section class="screen screen--experience" id="screen-letter" data-screen="letter"
+      data-chapter="letter" aria-labelledby="letter-title" hidden>
+      <div class="wrap">
+        <header class="section-head">
+          <p class="eyebrow">Chapter one</p>
+          <h2 class="display display--lg" id="letter-title" tabindex="-1">Everything I Want You to Know</h2>
+          <p class="section-sub">Read it slowly. Every word is yours.</p>
+        </header>
+
+        <div class="letter-wrap">
+          <article class="letter-sheet card" id="letterSheet" aria-label="Birthday letter from John Dominique G. Boyles">
+            <span class="washi washi--letter" aria-hidden="true"></span>
+            <div class="letter-head">
+              <span class="stamp" aria-hidden="true">FOR<br>KEYSHA<br><small>10·24</small></span>
+              <p class="handwritten letter-greeting">My dearest Wyn Keysha,</p>
+            </div>
+
+            <div class="letter-pages" id="letterPages">
+              <div class="letter-page is-active" data-page="0">
+                <p>Happy birthday, my love. I keep thinking about how a simple Instagram Note brought you into my life. I was the one who approached you first — best decision I ever made, even if I didn't know it yet. Somehow, a little message turned into late-night talks I never wanted to end.</p>
+                <p>I love the life we're building in the small moments: watching movies together, playing multiplayer games, and me pretending I'm not scared during the horror parts. You like horror movies and horror games. I don't. But I still watch and play them with you, because time with you matters more to me than avoiding a jump scare. (I'm still watching through my fingers, by the way.)</p>
+                <p>Somehow you made me the guy who says "okay, put on another one" while secretly checking behind him. That's love, I think.</p>
+              </div>
+
+              <div class="letter-page" data-page="1" hidden>
+                <p>Some of my favorite memories are the ones that happen late at night, when we talk about our future and imagine what it would be like to finally be together. I love laughing with you about random things, and I love that we can be completely ourselves with each other.</p>
+                <p>I also love that we don't pretend we're perfect. We've had hard moments. We've talked things through, tried to understand each other, and chosen to communicate instead of walking away. Those conversations mean a lot to me. They remind me that we're not just here for the easy days — we're choosing to grow together.</p>
+                <p>And I will never be normal about our video calls. When brain fog hits and your eyes do that little split-apart thing, I laugh every single time. Not at you — it's just one of those tiny, ridiculous, very "us" moments I love being part of.</p>
+              </div>
+
+              <div class="letter-page" data-page="2" hidden>
+                <p>On your birthday, I hope you feel exactly how much you're loved. I hope this year brings you peace, good health, success, and a hundred reasons to smile. I hope you get to rest when you're tired, laugh until your cheeks hurt, and feel supported on the days that aren't so easy.</p>
+                <p>I hope we keep making memories — the silly ones, the quiet ones, and the ones we'll talk about for years. I don't need a perfect story. I just want our story, with all its laughter and honesty and the way we keep choosing each other.</p>
+                <p>Happy birthday, my favorite person. Thank you for being you.</p>
+                <p class="letter-signoff">
+                  Always yours,<br>
+                  <span class="handwritten">John Dominique G. Boyles</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="letter-controls">
+              <button class="btn btn--ghost btn--sm" id="letterPrev" type="button">← Previous page</button>
+              <div class="page-dots" id="letterDots" role="group" aria-label="Letter pages"></div>
+              <button class="btn btn--primary btn--sm" id="letterNext" type="button">Next page →</button>
+            </div>
+            <p class="letter-progress" id="letterProgressText" role="status">Page 1 of 3</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 6 — MEMORIES SCRAPBOOK
+    ============================================================= -->
+    <section class="screen screen--experience" id="screen-memories" data-screen="memories"
+      data-chapter="memories" aria-labelledby="memories-title" hidden>
+      <div class="wrap">
+        <header class="section-head section-head--scrapbook">
+          <p class="eyebrow">Chapter two</p>
+          <h2 class="display display--lg" id="memories-title" tabindex="-1">Our Little Scrapbook</h2>
+          <p class="section-sub">A few moments I keep coming back to. Tap any memory to open it.</p>
+          <button class="secret-star" id="scrapbookSecret" type="button"
+            aria-label="Open a tiny hidden note tucked behind the scrapbook"><span aria-hidden="true">✦</span></button>
+          <span class="handwritten scrapbook-doodle" aria-hidden="true">us, in pieces of happy ♡</span>
+        </header>
+
+        <div class="scrapbook">
+          <span class="washi washi--scrapbook washi--scrapbook-one" aria-hidden="true"></span>
+          <span class="washi washi--scrapbook washi--scrapbook-two" aria-hidden="true"></span>
+          <div class="memory-grid" id="memoryGrid"></div>
+          <div class="scrapbook-bottom">
+            <span class="scrapbook-bottom__line" aria-hidden="true"></span>
+            <p class="handwritten" id="scrapbookSecretHint">
+              There's one more memory hiding. Open your gift first, then come back. ✨
+            </p>
+            <span class="scrapbook-bottom__line" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 7 — REASONS I LOVE YOU
+    ============================================================= -->
+    <section class="screen screen--experience" id="screen-reasons" data-screen="reasons"
+      data-chapter="reasons" aria-labelledby="reasons-title" hidden>
+      <div class="wrap">
+        <header class="section-head">
+          <p class="eyebrow">Chapter three</p>
+          <h2 class="display display--lg" id="reasons-title" tabindex="-1">Little Reasons Why You're My Favorite Person</h2>
+          <p class="section-sub">Tap a card to open it. Some reasons are too big for one line.</p>
+          <div class="head-actions">
+            <button class="btn btn--ghost btn--sm" id="revealAllReasons" type="button">Reveal all</button>
+            <button class="btn btn--ghost btn--sm" id="resetReasons" type="button">Reset cards</button>
+          </div>
+        </header>
+        <div class="reasons-grid" id="reasonsGrid"></div>
+        <p class="reasons-status" id="reasonsStatus" role="status">0 of 6 reasons opened</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 8 — LOVE METER
+    ============================================================= -->
+    <section class="screen screen--experience" id="screen-love" data-screen="love"
+      data-chapter="love" aria-labelledby="love-title" hidden>
+      <div class="wrap gate-center">
+        <div class="card love-card" id="loveCard">
+          <p class="eyebrow">Very official, extremely scientific</p>
+          <h2 class="display display--lg" id="love-title" tabindex="-1">How Much Do I Love You?</h2>
+          <p class="section-sub">Let's measure it. Fair warning: the meter might not survive.</p>
+
+          <div class="love-meter">
+            <div class="love-meter__top">
+              <span class="love-meter__percent" id="lovePercent">0%</span>
+              <span class="love-meter__badge" id="loveBadge">warming up</span>
+            </div>
+            <div class="love-meter__track" id="loveTrack">
+              <progress class="love-meter__bar" id="loveBar" max="100" value="0"
+                aria-label="How much I love you" aria-valuetext="Not measured yet">0%</progress>
+              <span class="love-meter__heart" id="loveHeart" aria-hidden="true">💗</span>
+            </div>
+            <div class="love-meter__ticks" aria-hidden="true">
+              <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span><span>∞</span>
+            </div>
+          </div>
+
+          <p class="love-message" id="loveMessage" aria-live="polite">Press the button. I'll do the math. 😌</p>
+
+          <div class="love-actions">
+            <button class="btn btn--primary btn--lg" id="measureBtn" type="button">Measure Our Love</button>
+            <button class="btn btn--ghost" id="loveReset" type="button" hidden>Measure again</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 9 — RUNAWAY BUTTON GAME
+    ============================================================= -->
+    <section class="screen screen--experience" id="screen-game" data-screen="game"
+      data-chapter="game" aria-labelledby="game-title" hidden>
+      <div class="wrap gate-center">
+        <div class="card game-card">
+          <p class="eyebrow">A very serious relationship test</p>
+          <h2 class="display display--lg" id="game-title" tabindex="-1">Do you love me? 🥺💗</h2>
+          <p class="section-sub">Choose carefully. One of these buttons is a little shy.</p>
+
+          <div class="game-actions">
+            <button class="btn btn--primary btn--lg" id="loveYes" type="button">Of course, babyy!</button>
+          </div>
+
+          <div class="dodge-field" id="dodgeField">
+            <span class="dodge-field__label" id="dodgeHint">the "No..." button is somewhere in here</span>
+            <button class="btn btn--ghost dodge-btn" id="loveNo" type="button">No...</button>
+          </div>
+
+          <div class="game-response" id="gameResponse" role="status" aria-live="polite"></div>
+          <button class="link-btn" id="skipGame" type="button">Skip this silly game →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 10 — GIFT
+    ============================================================= -->
+    <section class="screen screen--experience" id="screen-gift" data-screen="gift"
+      data-chapter="gift" aria-labelledby="gift-title" hidden>
+      <div class="wrap gate-center">
+        <div class="gift-stage">
+          <header class="section-head section-head--gift">
+            <p class="eyebrow">Chapter seven</p>
+            <h2 class="display display--lg" id="gift-title" tabindex="-1">A Little Gift for You</h2>
+            <p class="section-sub">Go on. It's not going to open itself. 💗</p>
+          </header>
+
+          <button class="gift" id="giftBox" type="button" aria-expanded="false"
+            aria-controls="giftReveal">
+            <span class="gift__glow" aria-hidden="true"></span>
+            <span class="gift__box" aria-hidden="true">
+              <span class="gift__lid">
+                <span class="gift__bow gift__bow--left"></span>
+                <span class="gift__bow gift__bow--right"></span>
+                <span class="gift__knot"></span>
+              </span>
+              <span class="gift__body">
+                <span class="gift__ribbon"></span>
+                <span class="gift__tag handwritten">for my favorite person</span>
+              </span>
+            </span>
+            <span class="gift__hint" id="giftHint">Tap to open your gift</span>
+            <span class="gift__sparkles" aria-hidden="true"><span aria-hidden="true">✦</span><span aria-hidden="true">♥</span><span aria-hidden="true">✦</span></span>
+          </button>
+
+          <div class="gift-reveal card" id="giftReveal" hidden>
+            <p class="eyebrow">Surprise, babyy</p>
+            <p class="gift-message">
+              Your gift is a little collection of memories, laughter, late-night talks,
+              and all the moments I still want to experience with you. And honestly,
+              my favorite gift is getting to make more memories with you. 💗
+            </p>
+            <div class="gift-reveal__actions">
+              <button class="btn btn--ghost" id="giftMore" type="button" aria-expanded="false"
+                aria-controls="giftExtra">There's one more thing…</button>
+              <button class="btn btn--primary" data-go="memories" type="button">Our memories await →</button>
+            </div>
+            <div class="gift-extra" id="giftExtra" hidden>
+              <p class="handwritten gift-extra__note">
+                Movie-night rule #1: you pick the horror, I bring the blanket and act brave.
+                Deal?
+              </p>
+              <p class="muted">A new memory just appeared in the scrapbook. Go see. ✨</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 11 — FINAL MESSAGE
+    ============================================================= -->
+    <section class="screen screen--experience" id="screen-final" data-screen="final"
+      data-chapter="final" aria-labelledby="final-title" hidden>
+      <div class="wrap gate-center">
+        <div class="final-card">
+          <span class="final-card__washi" aria-hidden="true"></span>
+          <p class="eyebrow">The last page (for now)</p>
+          <h2 class="display display--lg" id="final-title" tabindex="-1">
+            You made it to the end.<br><em>I hope you felt loved.</em> 💗
+          </h2>
+          <p class="final-card__lede">
+            Thank you for being my favorite person, my calmer place, and the one I want
+            to keep making memories with. I hope this little website made you smile —
+            even half as much as you make me smile.
+          </p>
+          <p class="handwritten final-card__note">
+            Here's to more movie nights, more games, more late-night talks,
+            and more us.
+          </p>
+          <p class="final-card__signature">Always yours,<br><span class="handwritten">John Dominique G. Boyles</span></p>
+
+          <p class="final-stats" id="finalStats">You explored 8 of 8 chapters.</p>
+
+          <div class="final-actions">
+            <button class="btn btn--primary" data-go="letter" type="button">Read your letter again</button>
+            <button class="btn btn--ghost" data-go="memories" type="button">Visit our scrapbook</button>
+            <button class="btn btn--ghost" id="replayBtn" type="button">Replay from the start ↺</button>
+          </div>
+
+          <button class="final-heart" id="finalHeart" type="button" aria-label="Give this website a little heart">
+            <span aria-hidden="true">♥</span>
+          </button>
+        </div>
+        <footer class="site-footer">
+          <p>Made with love by John Dominique G. Boyles.</p>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <nav class="chapter-nav" id="chapterNav" aria-label="Chapter navigation" hidden>
+    <button class="chapter-nav__btn chapter-nav__btn--back" id="prevBtn" type="button">← Back</button>
+    <span class="chapter-nav__current" id="chapterNavCurrent">The Big Day</span>
+    <button class="chapter-nav__btn chapter-nav__btn--next" id="nextBtn" type="button">Next →</button>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <dialog class="detail-dialog" id="detailDialog" aria-labelledby="dialogTitle">
+    <div class="detail-dialog__card">
+      <button class="dialog-close" id="dialogClose" type="button" aria-label="Close this note"><span aria-hidden="true">×</span></button>
+      <div class="detail-dialog__media" id="dialogMedia"></div>
+      <p class="eyebrow" id="dialogEyebrow">A memory</p>
+      <h2 class="display display--md" id="dialogTitle">Memory</h2>
+      <div class="detail-dialog__body" id="dialogBody"></div>
+      <button class="btn btn--primary detail-dialog__done" id="dialogDone" type="button">Close</button>
+    </div>
+  </dialog>
+
+  <audio id="audio" preload="none"></audio>
+  <script src="js/script.js" defer></script>
+</body>
+</html>
