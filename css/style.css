@@ -1012,8 +1012,8 @@ main {
 
 .success-burst {
   position: relative;
-  width: 124px;
-  height: 124px;
+  width: 152px;
+  height: 152px;
   margin: 0 auto 20px;
   display: grid;
   place-items: center;
@@ -1036,9 +1036,13 @@ main {
   border: 1px dashed rgba(195, 79, 99, 0.28);
 }
 
-.success-burst__heart {
-  font-size: 3.2rem;
-  filter: drop-shadow(0 8px 12px rgba(156, 48, 73, 0.22));
+.success-burst__cat {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: clamp(96px, 26vw, 120px);
+  height: auto;
+  filter: drop-shadow(0 10px 14px rgba(156, 48, 73, 0.22));
   animation: heart-beat-anim 1.8s ease-in-out infinite;
 }
 
@@ -4028,7 +4032,7 @@ main {
   .envelope,
   .art-card,
   .heart-beat,
-  .success-burst__heart,
+  .success-burst__cat,
   .secret-star,
   .sparkle {
     animation: none !important;
