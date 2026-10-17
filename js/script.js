@@ -255,56 +255,42 @@
   const openSurprise = $("#openSurprise");
   const identityCard = $("#identityCard");
   const identityResponse = $("#identityResponse");
-  const identityResponseFace = $("#identityResponseFace");
+  const identityResponseImage = $("#identityResponseImage");
   const identityResponseText = $("#identityResponseText");
   const yesBtn = $("#yesBtn");
   const noBtn = $("#noBtn");
   const retryIdentity = $("#retryIdentity");
   let identityLocked = false;
 
-  // Rotating responses for every "Nope!" tap so it never feels repetitive.
+  // Rotating reactions for every "Nope!" tap, so it never feels repetitive.
   const IDENTITY_REJECTIONS = [
     {
-      face: "😤💗",
-      text: "Excuse me?! You're not my baby. This little surprise is reserved for Wyn Keysha Gonzales! 😤💗",
+      image: "assets/icons/cat-up-eyebrow.png",
+      text: "Excuse me?! You're not my baby. This little surprise is reserved for Wyn Keysha Gonzales! 💗",
       toast: "Nice try, cutie. The surprise knows who it's for. 😤💗"
     },
     {
-      face: "🤨💗",
+      image: "assets/icons/cat-think.png",
       text: "Hmm... still not her. This website only opens for one very special person. 💗",
       toast: "Wrong again, cutie. Think of a certain birthday girl. 🤨"
     },
     {
-      face: "😳💗",
-      text: "Nope, nope, nope. Nice try though — this surprise is a Keysha-only zone! 😳💗",
-      toast: "The surprise is very picky. It only wants Wyn Keysha. 💗"
-    },
-    {
-      face: "🥺💗",
+      image: "assets/icons/cat-tears-handplease.png",
       text: "Aw, you're cute for trying. But my heart (and this website) belongs to Wyn Keysha Gonzales. 🥺💗",
       toast: "So close! The answer is still Wyn Keysha. 🥺💗"
     },
     {
-      face: "🙈💗",
-      text: "Wrong button, baby. This little world is reserved for Wyn Keysha Gonzales only! 🙈💗",
-      toast: "Nice try — Wyn Keysha is the only key that fits. 🙈"
-    },
-    {
-      face: "😌💗",
-      text: "You can keep tapping, but this surprise is only for my Keysha. 😌💗",
-      toast: "Persistent, huh? Still not her. 😌💗"
-    },
-    {
-      face: "💅💗",
-      text: "Absolutely not. This is a VIP (Very Important Person) area for Wyn Keysha. No gatecrashers! 💅💗",
-      toast: "Security has been notified. Still not Wyn Keysha. 💅"
-    },
-    {
-      face: "😇💗",
-      text: "Bless your heart, but this gift is addressed to Wyn Keysha Gonzales. Try again, sweetie. 😇💗",
-      toast: "So polite, but still not her. 😇💗"
+      image: "assets/icons/cat-nerd.png",
+      text: "Nope, nope, nope. Nice try though — this surprise is a Keysha-only zone! 💗",
+      toast: "The surprise is very picky. It only wants Wyn Keysha. 💗"
     }
   ];
+
+  // Warm the reaction images so switching between them never flickers.
+  IDENTITY_REJECTIONS.forEach((rejection) => {
+    const preload = new Image();
+    preload.src = rejection.image;
+  });
 
   let identityRejectionIndex = 0;
 
@@ -333,7 +319,7 @@
     const rejection = IDENTITY_REJECTIONS[identityRejectionIndex % IDENTITY_REJECTIONS.length];
     identityRejectionIndex += 1;
 
-    if (identityResponseFace) identityResponseFace.textContent = rejection.face;
+    if (identityResponseImage) identityResponseImage.src = rejection.image;
     if (identityResponseText) identityResponseText.textContent = rejection.text;
 
     identityResponse.hidden = false;
@@ -1708,7 +1694,7 @@
 
     // Gate screens.
     identityRejectionIndex = 0;
-    if (identityResponseFace) identityResponseFace.textContent = IDENTITY_REJECTIONS[0].face;
+    if (identityResponseImage) identityResponseImage.src = IDENTITY_REJECTIONS[0].image;
     if (identityResponseText) identityResponseText.textContent = IDENTITY_REJECTIONS[0].text;
     identityResponse.hidden = true;
     identityResponse.classList.remove("is-active");

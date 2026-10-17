@@ -871,8 +871,9 @@ main {
 
 .inline-response__face {
   display: block;
-  font-size: 2rem;
-  margin-bottom: 6px;
+  width: clamp(104px, 26vw, 148px);
+  height: auto;
+  margin-bottom: 14px;
 }
 
 .inline-response p {
