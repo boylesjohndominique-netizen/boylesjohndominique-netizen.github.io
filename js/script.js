@@ -367,6 +367,22 @@
       .trim()
       .toLowerCase();
 
+  // Rotating reactions for every wrong guess, so it never feels repetitive.
+  const SECRET_REJECTIONS = [
+    "Hmmmm... try again, baby. You know this one! 💗",
+    "Close, but nope! It's the name of the boy who built this for you. 😌",
+    "Not quite, babe. Think of the two-syllable name you call me when you're sweet. 💗",
+    "Aww, wrong answer — but still cute. Try again, babyy. 🥺",
+    "Nope, that's not me. I'm your favorite Instagram Notes boy. 😌💗",
+    "Mm, not it. But keep guessing, I love watching you try. 😏💗",
+    "Wrong, but I still love you. One more guess, my love? 💗",
+    "That's not your boyfriend, baby. Think harder! 😤💗",
+    "So close to unlocking me... try the name you whisper at night. 🌙💗",
+    "Nuh-uh, cutie. You know me better than that. 💗"
+  ];
+
+  let secretRejectionIndex = 0;
+
   function setSecretError(message) {
     secretFeedback.textContent = message;
     secretFeedback.classList.remove("is-success");
@@ -402,7 +418,10 @@
       return;
     }
 
-    setSecretError("Hmmmm... try again, baby. You know this one! 💗");
+    const rejection = SECRET_REJECTIONS[secretRejectionIndex % SECRET_REJECTIONS.length];
+    secretRejectionIndex += 1;
+
+    setSecretError(rejection);
     secretAnswer.focus({ preventScroll: true });
     secretAnswer.select();
   });
@@ -1731,6 +1750,7 @@
     identityCard.classList.remove("is-shaking", "is-celebrating");
     secretCard.hidden = false;
     secretSuccess.hidden = true;
+    secretRejectionIndex = 0;
     secretForm.reset();
     secretFeedback.textContent = "";
     secretFeedback.classList.remove("is-error", "is-success");
