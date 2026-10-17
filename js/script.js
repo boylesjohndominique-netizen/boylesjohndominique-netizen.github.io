@@ -1371,6 +1371,8 @@
   let history = [];    // previously played indices, for the back button
   let loadToken = 0;   // guards against out-of-order (slow) track loads
   let currentBlobUrl = null; // object URL for the song currently loaded
+  let musicIntent = false;   // true only while the visitor wants music playing
+  let stallTimer = null;     // watchdog that revives stalled playback on phones
 
   // Free a used blob URL, but only after the <audio> element has moved on, so
   // we never abort a read that is still in progress.
@@ -1384,6 +1386,31 @@
 
   const trackLabel = (track) => (track.artist ? `${track.title} — ${track.artist}` : track.title);
 
+  // Tell the phone's lock screen / notification about the song. This keeps the
+  // media session alive so phones are far less likely to silently kill playback
+  // when the screen locks or the visitor switches apps.
+  function updateMediaSession(track) {
+    if (!track || !("mediaSession" in navigator) || typeof window.MediaMetadata !== "function") return;
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: track.title,
+        artist: track.artist || "Wyn Keysha 💗",
+        album: "Our Little Soundtrack"
+      });
+    } catch (error) {
+      /* Metadata is a nice-to-have — never let it break playback. */
+    }
+  }
+
+  function setMediaSessionState(playing) {
+    if (!("mediaSession" in navigator)) return;
+    try {
+      navigator.mediaSession.playbackState = playing ? "playing" : "paused";
+    } catch (error) {
+      /* Not supported everywhere. */
+    }
+  }
+
   function setMusicStatus(message) {
     if (musicStatus) musicStatus.textContent = message;
   }
@@ -1393,6 +1420,7 @@
     if (!track) return;
     if (musicNow) musicNow.hidden = false;
     if (musicNowTitle) musicNowTitle.textContent = trackLabel(track);
+    updateMediaSession(track);
 
     $$(".track", trackList).forEach((item, index) => {
       const isCurrent = index === trackIndex;
@@ -1547,6 +1575,7 @@
   }
 
   function playNext(autoplay = true) {
+    musicIntent = true;
     const next = nextRandomIndex(trackIndex);
     if (next === -1) {
       if (!failedTracks.has(trackIndex)) {
@@ -1561,6 +1590,7 @@
   }
 
   function playPrev() {
+    musicIntent = true;
     let prev = -1;
     while (history.length) {
       const candidate = history.pop();
@@ -1583,6 +1613,7 @@
       showToast("That song file isn't there yet. 💗");
       return;
     }
+    musicIntent = true;
     if (index !== trackIndex) history.push(trackIndex);
     bag = bag.filter((item) => item !== index);
     loadTrack(index, { autoplay: true });
@@ -1641,6 +1672,7 @@
   // This starts the soundtrack right away (used by "Open Your Surprise" and the
   // music button); if the song is still loading it starts the moment it's ready.
   function beginSoundtrack() {
+    musicIntent = true;
     if (!audio.paused) return;
     if (!audio.src) {
       pendingAutoplay = true;
@@ -1654,9 +1686,13 @@
 
   // First tap/keypress anywhere also begins the music, as a safety net.
   function markUserActivated() {
-    if (userActivated) return;
-    userActivated = true;
-    beginSoundtrack();
+    if (!userActivated) {
+      userActivated = true;
+      beginSoundtrack();
+      return;
+    }
+    // Later taps can also wake the music back up if the phone paused it.
+    resumeIfNeeded();
   }
 
   ["pointerdown", "keydown", "touchstart"].forEach((type) => {
@@ -1664,6 +1700,7 @@
   });
 
   function tryStartMusic() {
+    musicIntent = true;
     playCurrent({ silent: true }).then((ok) => {
       if (ok) return;
       autoplayBlocked = true;
@@ -1673,14 +1710,66 @@
     });
   }
 
+  // Phones love to silently pause media (screen lock, app switch, audio-focus
+  // loss). This quietly brings the music back whenever we still want it playing.
+  let resumeScheduled = false;
+
+  function resumeIfNeeded() {
+    if (!musicIntent || audioFailed || autoplayBlocked) return;
+    if (!audio.paused) return;
+    if (document.visibilityState !== "visible") return;
+    playCurrent({ silent: true }).then((ok) => {
+      if (!ok) autoplayBlocked = true;
+    });
+  }
+
+  function scheduleResume(delay) {
+    if (resumeScheduled) return;
+    resumeScheduled = true;
+    window.setTimeout(() => {
+      resumeScheduled = false;
+      resumeIfNeeded();
+    }, delay);
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") scheduleResume(400);
+  });
+
+  // If a stream stalls on a slow connection, give it a nudge to keep going.
+  function clearStallTimer() {
+    if (stallTimer) {
+      window.clearTimeout(stallTimer);
+      stallTimer = null;
+    }
+  }
+
+  ["stalled", "waiting"].forEach((type) => {
+    audio.addEventListener(type, () => {
+      if (!musicIntent) return;
+      clearStallTimer();
+      stallTimer = window.setTimeout(() => {
+        if (musicIntent && audio.paused && !audioFailed && !autoplayBlocked) {
+          playCurrent({ silent: true });
+        }
+      }, 4000);
+    });
+  });
+
+  ["playing", "canplay", "timeupdate", "progress"].forEach((type) => {
+    audio.addEventListener(type, clearStallTimer);
+  });
+
   async function toggleMusic() {
     if (audio.paused) {
+      musicIntent = true;
       if (!audio.src) {
         loadTrack(trackIndex, { autoplay: true });
         return;
       }
       playCurrent();
     } else {
+      musicIntent = false;
       audio.pause();
       setMusicStatus("Music paused. Press play whenever you want it back.");
     }
@@ -1715,10 +1804,12 @@
     autoplayBlocked = false;
     const track = MUSIC_TRACKS[trackIndex];
     setMusicStatus(`Now playing “${track.title}”${track.artist ? " — " + track.artist : ""}. 🎶`);
+    setMediaSessionState(true);
     updateMusicUI();
   });
 
   audio.addEventListener("pause", () => {
+    setMediaSessionState(false);
     updateMusicUI();
     if (!audioFailed && !autoplayBlocked && state.current !== "welcome") {
       setMusicStatus("Music paused. Press play whenever you want it back.");
@@ -1730,6 +1821,30 @@
   });
 
   audio.addEventListener("error", handleTrackError);
+
+  // Lock-screen / notification controls (phones keep the media session alive
+  // while these are registered, which stops the music from being killed).
+  if ("mediaSession" in navigator) {
+    const mediaHandlers = {
+      play: () => {
+        musicIntent = true;
+        playCurrent();
+      },
+      pause: () => {
+        musicIntent = false;
+        audio.pause();
+      },
+      nexttrack: () => playNext(true),
+      previoustrack: () => playPrev()
+    };
+    Object.keys(mediaHandlers).forEach((action) => {
+      try {
+        navigator.mediaSession.setActionHandler(action, mediaHandlers[action]);
+      } catch (error) {
+        /* Some actions are not supported on every device. */
+      }
+    });
+  }
 
   volumeRange.addEventListener("input", () => {
     const volume = Number(volumeRange.value);
@@ -1763,6 +1878,7 @@
     }
     audioFailed = false;
     audioErrorToastShown = false;
+    musicIntent = true;
     failedTracks.clear();
     bag = [];
     history = [];
