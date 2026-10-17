@@ -545,64 +545,94 @@
   const MEMORIES = [
     {
       id: "instagram",
-      title: "The Instagram Notes Beginning",
+      title: "Our First Interaction",
       caption: "where it all started",
       sticker: "💌",
-      image: "assets/images/couple-1.jpg",
-      alt: "Placeholder illustration for our photo — the Instagram Notes beginning",
+      image: "assets/images/our-pictures/our-first-interaction.jpg",
+      alt: "Our first interaction — the Instagram Notes beginning",
       body:
         "Some stories start in the most ordinary places. Ours started with Instagram Notes — and me being the one brave enough to approach you first.\n\nI didn't know then that a small hello would turn into someone I talk to every day, plan a future with, and call my favorite person. But I'm really glad I sent it."
     },
     {
-      id: "movies",
-      title: "Movie Nights",
-      caption: "I'm braver than I look",
-      sticker: "🍿",
-      image: "assets/images/couple-2.jpg",
-      alt: "Placeholder illustration for our photo — movie nights together",
+      id: "calls-one",
+      title: "Our Laptop Calls",
+      caption: "screen to screen",
+      sticker: "📱",
+      image: "assets/images/our-pictures/us-laptopcall-picture2.jpg",
+      alt: "Us on a laptop video call",
       body:
-        "You love horror movies. I do not. But I still watch them with you, usually through my fingers, with my whole body tensed and ready to leave the room.\n\nI stay because time with you matters more than avoiding a jump scare. (Don't tell anyone I said that.)"
+        "Long-distance means our favorite hangout is a glowing screen, and honestly? I'd take a laptop call with you over almost anything else.\n\nSeeing your face, hearing you laugh, watching you get distracted mid-sentence — it all makes the distance feel a little smaller."
     },
     {
-      id: "talks",
-      title: "Late-Night Talks",
-      caption: "our future, out loud",
+      id: "calls-two",
+      title: "Late-Night Calls",
+      caption: "still not tired of you",
       sticker: "🌙",
-      image: "assets/images/couple-3.jpg",
-      alt: "Placeholder illustration for our photo — late-night conversations",
+      image: "assets/images/our-pictures/us-laptopcall-picture3.jpg",
+      alt: "Us together on another late-night laptop call",
       body:
         "My favorite kind of night is the one where the messages get longer and the hours get smaller.\n\nWe talk about our future, imagine what it will be like to finally be together, and make each other laugh about absolutely nothing. Those conversations are some of my favorite places to be."
     },
     {
-      id: "fixing",
-      title: "Us Figuring Things Out",
-      caption: "we choose each other",
-      sticker: "🫶",
-      image: "assets/images/memories/memory-4.jpg",
-      alt: "Placeholder illustration for our photo — talking things through",
-      body:
-        "We aren't perfect, and I wouldn't want a relationship that pretends to be. We've had hard moments. We've talked things through, tried to understand each other, and chosen to communicate instead of shutting down.\n\nFixing things together means more to me than pretending nothing happened. That's part of us too, and I'm proud of it."
-    },
-    {
       id: "games",
-      title: "Games & Silly Calls",
+      title: "Games Together",
       caption: "brain fog, but make it cute",
       sticker: "🎮",
-      image: "assets/images/memories/memory-5.jpg",
-      alt: "Placeholder illustration for our photo — games and video calls",
+      image: "assets/images/our-pictures/us-playing-roblox.jpg",
+      alt: "Us playing Roblox together",
       body:
-        "Multiplayer games, random jokes, and video calls where the conversation goes completely off the rails.\n\nWhen brain fog hits and your eyes do that little split-apart thing, it makes me laugh every time — not at you, just because it's such a \"you\" moment and I love being on the other side of the screen for it. Consider this our very serious private joke."
+        "Multiplayer games, random jokes, and calls where the conversation goes completely off the rails.\n\nWhen brain fog hits and your eyes do that little split-apart thing, it makes me laugh every time — not at you, just because it's such a \"you\" moment and I love being on the other side of the screen for it. Consider this our very serious private joke."
+    },
+    {
+      id: "silly",
+      title: "Our Silly Faces",
+      caption: "certified goofballs",
+      sticker: "😝",
+      image: "assets/images/our-pictures/us-weird-faces3.jpg",
+      alt: "Us making silly faces together",
+      body:
+        "No one makes me laugh as easily as you do. This is us without filters, without plans, just being ridiculous together.\n\nI think that's why we work — we never take ourselves too seriously. Keep the funny faces coming, baby."
+    },
+    {
+      id: "keysha",
+      title: "My Baby Keysha",
+      caption: "the prettiest girl ever",
+      sticker: "💗",
+      image: "assets/images/our-pictures/my-baby-keysha.jpg",
+      alt: "A photo of my baby, Keysha",
+      body:
+        "I could look at this photo forever. You, being effortlessly pretty without even trying.\n\nThank you for being mine, for being patient with me, and for making my days better just by existing. You really are the prettiest girl ever."
+    },
+    {
+      id: "gift",
+      title: "Me With Your Gift",
+      caption: "I still smile at this one",
+      sticker: "🎁",
+      image: "assets/images/our-pictures/me-with-her-gift.jpg",
+      alt: "Me holding the gift she gave me",
+      body:
+        "Something from you means more than it probably should, and I'm not even sorry about it.\n\nI keep every little thing you give me close. It's not about what it is — it's about who it came from. Thank you, baby."
+    },
+    {
+      id: "imagined",
+      title: "Us, Imagined",
+      caption: "how I picture our future",
+      sticker: "✨",
+      image: "assets/images/our-pictures/us-generated-ai.jpg",
+      alt: "An AI-generated picture of us",
+      body:
+        "We might not have a real photo of every moment yet, so I made one to hold us over — a little peek at the future I keep daydreaming about.\n\nOne day the distance won't be between us. Until then, I'll keep imagining us like this and working toward it."
     },
     {
       id: "secret",
       title: "The Chapter We're Still Writing",
       caption: "to be continued...",
-      sticker: "✨",
+      sticker: "💫",
       secret: true,
-      image: "assets/images/memories/memory-6.jpg",
-      alt: "Placeholder illustration for our photo — our next chapter",
+      image: "assets/images/our-pictures/ai-imagination-ofus.jpg",
+      alt: "An imagined picture of our next chapter",
       body:
-        "No photo for this one yet, because it's still happening. It's all the ordinary days ahead: more movies, more games, more late-night talks, and more chances to choose each other.\n\nI don't know every detail of what's coming. I just know I want more of it with you."
+        "This chapter isn't finished, because it's still happening. It's all the ordinary days ahead: more calls, more games, more late-night talks, and more chances to choose each other.\n\nI don't know every detail of what's coming. I just know I want more of it with you."
     }
   ];
 
@@ -635,7 +665,7 @@
           <span class="memory-card__tape" aria-hidden="true"></span>
           <span class="memory-card__img-wrap">
             <img class="memory-card__img" src="${memory.image}" alt="${memory.alt}"
-              width="900" height="675" loading="lazy" decoding="async">
+              width="900" height="1200" loading="lazy" decoding="async">
             <span class="memory-card__fallback" aria-hidden="true">
               ♡<span>our photo goes here</span>
             </span>
@@ -737,7 +767,7 @@
     img.src = image.image;
     img.alt = image.alt;
     img.width = 900;
-    img.height = 675;
+    img.height = 1200;
     img.decoding = "async";
 
     img.addEventListener("error", () => {

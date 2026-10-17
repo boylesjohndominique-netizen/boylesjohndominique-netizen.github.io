@@ -2405,7 +2405,7 @@ main {
 .memory-card__img-wrap {
   position: relative;
   display: block;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
   border-radius: 2px;
   background: var(--cream-deep);
@@ -3425,7 +3425,8 @@ main {
 .detail-dialog__media img {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 4;
+  max-height: min(62svh, 540px);
   object-fit: cover;
 }
 
