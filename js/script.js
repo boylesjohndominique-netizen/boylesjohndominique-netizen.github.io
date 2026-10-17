@@ -1114,7 +1114,7 @@
   }
 
   function moveNoButton() {
-    if (state.gameDone || state.dodges >= 5) return;
+    if (state.gameDone) return;
 
     lastDodgeTime = Date.now();
     state.dodges += 1;
@@ -1125,14 +1125,8 @@
     loveNo.style.top = `${y}%`;
     dodgeField.classList.add("has-moved");
 
+    // The "No" button never gives up — it keeps running away forever.
     showNoReaction();
-
-    if (state.dodges >= 5) {
-      loveNo.classList.add("is-tired");
-      loveNo.setAttribute("aria-label", "No... (the button has officially given up running)");
-      gameResponseText.textContent =
-        "Even the “No...” button is out of breath. My love, however, is not. 😂💗";
-    }
   }
 
   dodgeField.addEventListener("pointermove", (event) => {
@@ -1153,7 +1147,7 @@
 
   loveNo.addEventListener("click", (event) => {
     if (state.gameDone) {
-      showGameResponse("Nice try, baby. You can't escape this much love! 😂💗", true, LOVE_IMAGE);
+      showNoReaction();
       return;
     }
 
@@ -1165,13 +1159,9 @@
       return;
     }
 
-    // Touch-friendly fallback: a small escape, then a playful message.
-    if (state.dodges < 3) {
-      moveNoButton();
-    } else {
-      showGameResponse("Nice try, baby. You can't escape this much love! 😂💗", true, LOVE_IMAGE);
-      burstFromElement(loveNo, 18);
-    }
+    // Touch has no hover, so a tap is what makes it run away — and it never stops.
+    moveNoButton();
+    burstFromElement(loveNo, 14);
   });
 
   loveYes.addEventListener("click", () => {
