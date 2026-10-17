@@ -873,7 +873,7 @@ main {
   display: block;
   width: clamp(104px, 26vw, 148px);
   height: auto;
-  margin-bottom: 14px;
+  margin: 0 auto 14px;
 }
 
 .inline-response p {
