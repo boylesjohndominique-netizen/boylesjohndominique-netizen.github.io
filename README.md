@@ -14,7 +14,7 @@ No frameworks, no build step, no backend, no database, no analytics, and no trac
 - A playful "Are you Wyn Keysha Gonzales?" check
 - A secret question that accepts **John Dominique G. Boyles** or **Babyy** (case-insensitive, spaces trimmed)
 - A cinematic birthday reveal with a live Manila-time countdown and confetti
-- A three-page birthday letter
+- A four-page birthday letter
 - A five-card memories scrapbook (plus one secret memory), with an accessible detail dialog
 - Flip cards with little reasons
 - A comically overflowing love meter
@@ -233,7 +233,7 @@ The letter is stored as normal HTML so it's easy to edit. Open `index.html` and 
 Everything I Want You to Know
 ```
 
-Inside `.letter-pages` there are three `.letter-page` blocks. Edit the `<p>` paragraphs directly.
+Inside `.letter-pages` there are four `.letter-page` blocks. Edit the `<p>` paragraphs directly.
 The final page contains the `.letter-signoff`.
 
 Rules that keep the layout working:
