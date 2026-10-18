@@ -509,14 +509,34 @@
         <header class="section-head">
           <p class="eyebrow">Chapter three</p>
           <h2 class="display display--lg" id="reasons-title" tabindex="-1">Little Reasons Why You're My Favorite Person</h2>
-          <p class="section-sub">Tap a card to open it. Some reasons are too big for one line.</p>
+          <p class="section-sub">Swipe the card left or right. There's a little reason hiding under each one.</p>
           <div class="head-actions">
-            <button class="btn btn--ghost btn--sm" id="revealAllReasons" type="button">Reveal all</button>
-            <button class="btn btn--ghost btn--sm" id="resetReasons" type="button">Reset cards</button>
+            <button class="btn btn--ghost btn--sm" id="shuffleReasons" type="button">Shuffle the deck</button>
+            <button class="btn btn--ghost btn--sm" id="resetReasons" type="button">Start over</button>
           </div>
         </header>
-        <div class="reasons-grid" id="reasonsGrid"></div>
-        <p class="reasons-status" id="reasonsStatus" role="status">0 of 6 reasons opened</p>
+
+        <div class="reasons-deck">
+          <div class="reasons-deck__glow" aria-hidden="true"></div>
+          <div class="reasons-stack" id="reasonsGrid" role="group"
+            aria-roledescription="card deck" aria-label="Reasons I love you — swipe through the cards"
+            tabindex="0"></div>
+
+          <div class="reasons-nav">
+            <button class="reasons-nav__btn reasons-nav__btn--prev" id="reasonPrev" type="button" aria-label="Previous reason">
+              <span aria-hidden="true">←</span> <span class="reasons-nav__text">Prev</span>
+            </button>
+            <div class="reasons-nav__counter">
+              <span class="reasons-status" id="reasonsStatus" role="status">Reason 1 of 17</span>
+              <span class="reasons-nav__dots" id="reasonsDots" aria-hidden="true"></span>
+            </div>
+            <button class="reasons-nav__btn reasons-nav__btn--next" id="reasonNext" type="button" aria-label="Next reason">
+              <span class="reasons-nav__text">Next</span> <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <p class="reasons-hint handwritten" aria-hidden="true">swipe the card, babyy ♡</p>
+        </div>
       </div>
     </section>
 
