@@ -30,6 +30,7 @@
   --font-display: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --font-body: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-hand: "Caveat", "Segoe Script", "Bradley Hand", cursive;
+  --font-hand-cute: "Gochi Hand", "Caveat", "Segoe Script", cursive;
 
   --radius-xl: 36px;
   --radius-lg: 28px;
