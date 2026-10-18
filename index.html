@@ -531,6 +531,11 @@
           <h2 class="display display--lg" id="love-title" tabindex="-1">How Much Do I Love You?</h2>
           <p class="section-sub">Let's measure it. Fair warning: the meter might not survive.</p>
 
+          <div class="love3d" id="love3d" aria-hidden="true">
+            <canvas class="love3d__canvas" id="love3dCanvas"></canvas>
+            <span class="love3d__hint">drag to spin · pinch to zoom</span>
+          </div>
+
           <div class="love-meter">
             <div class="love-meter__top">
               <span class="love-meter__percent" id="lovePercent">0%</span>
@@ -705,5 +710,7 @@
 
   <audio id="audio" preload="none"></audio>
   <script src="js/script.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js" defer></script>
+  <script src="js/love3d.js" defer></script>
 </body>
 </html>

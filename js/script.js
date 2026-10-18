@@ -222,6 +222,10 @@
     if (name === "memories" && state.memoryUnlocked) {
       unlockSecretMemory(false);
     }
+
+    if (window.Love3D) {
+      window.Love3D.setActive(name === "love");
+    }
   }
 
   function goToChapter(id) {
@@ -960,6 +964,7 @@
     loveBar.value = clamped;
     loveHeart.style.left = `${clamped}%`;
     loveBar.setAttribute("aria-valuetext", `${Math.round(clamped)} percent of the meter`);
+    if (window.Love3D) window.Love3D.setProgress(clamped);
   }
 
   function finishLoveMeter() {
@@ -977,6 +982,7 @@
     loveRunning = false;
     state.loveMeasured = true;
     burstFromElement(loveBar, 28);
+    if (window.Love3D) window.Love3D.celebrate();
   }
 
   function measureLove() {
@@ -1044,6 +1050,7 @@
     measureBtn.hidden = false;
     measureBtn.disabled = false;
     loveReset.hidden = true;
+    if (window.Love3D) window.Love3D.reset();
   }
 
   measureBtn.addEventListener("click", measureLove);
