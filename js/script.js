@@ -568,53 +568,53 @@
   const MEMORIES = [
     {
       id: "instagram",
-      title: "Our First Interaction",
-      caption: "where it all started",
+      title: "Instagram Notes Interaction",
+      caption: "first interaction",
       sticker: "💌",
       image: "assets/images/our-pictures/our-first-interaction.jpg",
       alt: "Our first interaction — the Instagram Notes beginning",
       body:
-        "Some stories start in the most ordinary places. Ours started with Instagram Notes — and me being the one brave enough to approach you first.\n\nI didn't know then that a small hello would turn into someone I talk to every day, plan a future with, and call my favorite person. But I'm really glad I sent it."
+        "Ka random lang gyud noh nga tungod lang sa pa dungog-dungog nato sa ig notes kay nagkaila ta? Like sa always nakong iingon na wala ko ga expect na mag notes ka about nako, and I'm glad na niuna ka hehe. Then ni reply ko atong notes nimo tapos adto na nag sugod, from tiktok streak tas chat and playing roblox games, tapos now look at us now. I'm so glad that I met you, and I'm so glad that you're mine. I love you so much babyyy hehehe. 💗"
     },
     {
       id: "calls-one",
-      title: "Our Laptop Calls",
-      caption: "screen to screen",
+      title: "Pictures in Video calls",
+      caption: "random picture together",
       sticker: "📱",
       image: "assets/images/our-pictures/us-laptopcall-picture2.jpg",
       alt: "Us on a laptop video call",
       body:
-        "Long-distance means our favorite hangout is a glowing screen, and honestly? I'd take a laptop call with you over almost anything else.\n\nSeeing your face, hearing you laugh, watching you get distracted mid-sentence — it all makes the distance feel a little smaller."
+        "So cute ohh HAHAHA, us taking picture always sa video call(sa video call pa gani na ha what more pa sa personal na). of course always ta mag picture sa call kay pretty manka kaayo hehehe. I LOVEE YOUUU ALWAYSSS and more pictures with you soon."
     },
     {
       id: "calls-two",
-      title: "Late-Night Calls",
-      caption: "still not tired of you",
+      title: "Night-calls",
+      caption: "my favorite part of the day",
       sticker: "🌙",
       image: "assets/images/our-pictures/us-laptopcall-picture3.jpg",
       alt: "Us together on another late-night laptop call",
       body:
-        "My favorite kind of night is the one where the messages get longer and the hours get smaller.\n\nWe talk about our future, imagine what it will be like to finally be together, and make each other laugh about absolutely nothing. Those conversations are some of my favorite places to be."
+        "Of course my favorite part of the day is maka video call na nimo hehe, asa raba nang ldr if magka talk nata sa video call diba? HAHAHAH"
     },
     {
       id: "games",
-      title: "Games Together",
-      caption: "brain fog, but make it cute",
+      title: "Playing Games",
+      caption: "boring? no oyy magduwa ta",
       sticker: "🎮",
       image: "assets/images/our-pictures/us-playing-roblox.jpg",
       alt: "Us playing Roblox together",
       body:
-        "Multiplayer games, random jokes, and calls where the conversation goes completely off the rails.\n\nWhen brain fog hits and your eyes do that little split-apart thing, it makes me laugh every time — not at you, just because it's such a \"you\" moment and I love being on the other side of the screen for it. Consider this our very serious private joke."
+        "Maka remember pako sauna ba lisod kaayo mag communicate ta tas magduwa kay mauwaw pa mag call HAHAHA. More games to play with you soon babyyy"
     },
     {
       id: "silly",
-      title: "Our Silly Faces",
-      caption: "certified goofballs",
+      title: "Weirdddd",
+      caption: "ambot ngano ta ani HAHAHA",
       sticker: "😝",
       image: "assets/images/our-pictures/us-weird-faces3.jpg",
       alt: "Us making silly faces together",
       body:
-        "No one makes me laugh as easily as you do. This is us without filters, without plans, just being ridiculous together.\n\nI think that's why we work — we never take ourselves too seriously. Keep the funny faces coming, baby."
+        "Maka hinomdom pako ani imo kung gitudloan, tapos ikaw ray maka saktog buhat sa mata HAHAHA cutieee. Same humor og vibe jud always ba"
     },
     {
       id: "keysha",
@@ -624,27 +624,27 @@
       image: "assets/images/our-pictures/my-baby-keysha.jpg",
       alt: "A photo of my baby, Keysha",
       body:
-        "I could look at this photo forever. You, being effortlessly pretty without even trying.\n\nThank you for being mine, for being patient with me, and for making my days better just by existing. You really are the prettiest girl ever."
+        "The PRETTIESSTTTT GIRLLLL, wala nakoy maingon pa HAHAHAH. I LOVEEE YOUUUU BABYYYY!!!"
     },
     {
       id: "gift",
       title: "Me With Your Gift",
-      caption: "I still smile at this one",
+      caption: "cute na gift, the best ever",
       sticker: "🎁",
       image: "assets/images/our-pictures/me-with-her-gift.jpg",
       alt: "Me holding the gift she gave me",
       body:
-        "Something from you means more than it probably should, and I'm not even sorry about it.\n\nI keep every little thing you give me close. It's not about what it is — it's about who it came from. Thank you, baby."
+        "Wala jud ko nag expect na mag gift ka nako ani, cuteee kaayo hehehe. Pinaka cute na gift na akoang na receive kay naay nawong nimo:>"
     },
     {
       id: "imagined",
-      title: "Us, Imagined",
-      caption: "how I picture our future",
+      title: "AI rani haa",
+      caption: "haysss ai",
       sticker: "✨",
       image: "assets/images/our-pictures/us-generated-ai.jpg",
       alt: "An AI-generated picture of us",
       body:
-        "We might not have a real photo of every moment yet, so I made one to hold us over — a little peek at the future I keep daydreaming about.\n\nOne day the distance won't be between us. Until then, I'll keep imagining us like this and working toward it."
+        "Katawaa nato ani while nag himo ani ba HAHAHAH soon tinuod nana oyy bantay lang"
     },
     {
       id: "secret",
@@ -652,7 +652,7 @@
       caption: "to be continued...",
       sticker: "💫",
       secret: true,
-      image: "assets/images/our-pictures/ai-imagination-ofus.jpg",
+      image: "assets/images/our-pictures/secret-together.jpg",
       alt: "An imagined picture of our next chapter",
       body:
         "This chapter isn't finished, because it's still happening. It's all the ordinary days ahead: more calls, more games, more late-night talks, and more chances to choose each other.\n\nI don't know every detail of what's coming. I just know I want more of it with you."
@@ -847,93 +847,317 @@
   });
 
   /* ============================================================
-     Reasons I love you
+     Reasons I love you — swipeable card deck
   ============================================================ */
   const REASONS = [
     "Because you make ordinary moments feel special.",
-    "Because I love our random jokes and conversations.",
-    "Because I enjoy spending time with you, even when a horror game scares me.",
-    "Because I love imagining our future together.",
-    "Because I appreciate the times we try to understand each other.",
-    "Because being with you gives me more memories to look forward to."
+    "Because I love our random jokes and late-night conversations.",
+    "Because I'll sit through any horror game just to hear you laugh.",
+    "Because I love every picture of the future we draw together.",
+    "Because you always try to understand me, even on my off days.",
+    "Because being with you gives me a thousand more memories to look forward to.",
+    "Because your good-morning and goodnight messages fix my whole day.",
+    "Because you make the long distance feel a little less far.",
+    "Because praying with you at night is my favorite way to end a day.",
+    "Because you're the prettiest girl I've ever seen, and you're mine.",
+    "Because you believe in me when I forget how to believe in myself.",
+    "Because your laugh is my favorite sound in the whole world.",
+    "Because even our quiet moments together feel warm and safe.",
+    "Because you choose to fix things with me instead of walking away.",
+    "Because you turned one little Instagram Note into the best part of my life.",
+    "Because you make me want to be a better man every single day.",
+    "Because no matter what we're doing, I'd rather be doing it with you."
   ];
 
-  const reasonsGrid = $("#reasonsGrid");
+  const reasonsStack = $("#reasonsGrid");
   const reasonsStatus = $("#reasonsStatus");
-  const revealAllReasons = $("#revealAllReasons");
+  const reasonsDots = $("#reasonsDots");
+  const reasonPrev = $("#reasonPrev");
+  const reasonNext = $("#reasonNext");
+  const shuffleReasonsBtn = $("#shuffleReasons");
   const resetReasonsBtn = $("#resetReasons");
 
-  function setReasonState(card, index, revealed) {
-    card.classList.toggle("is-revealed", revealed);
-    card.setAttribute("aria-pressed", String(revealed));
+  const REASON_COUNT = REASONS.length;
+  const REASON_VISIBLE = 4;
+  const REASON_TILTS = [-3.2, 2.4, -1.8, 3.4, -2.6, 1.6, -3.6, 2.8];
 
-    const front = $(".reason-face--front", card);
-    const back = $(".reason-face--back", card);
-    if (front) front.setAttribute("aria-hidden", String(revealed));
-    if (back) back.setAttribute("aria-hidden", String(!revealed));
+  let reasonsOrder = REASONS.map((reason, index) => index);
+  let reasonPos = 0;
+  let reasonCards = [];
+  let reasonAnimating = false;
+  let reasonDrag = null;
+  let reasonDots = [];
 
-    if (revealed) {
-      state.reasonsRevealed.add(index);
+  const reasonTopCard = () => reasonCards[reasonsOrder[reasonPos]] || null;
+
+  function buildReasonDots() {
+    reasonsDots.innerHTML = "";
+    reasonDots = reasonsOrder.map(() => {
+      const dot = document.createElement("span");
+      dot.className = "reasons-dot";
+      reasonsDots.appendChild(dot);
+      return dot;
+    });
+  }
+
+  function updateReasonNav() {
+    reasonsStatus.textContent = `Reason ${reasonPos + 1} of ${REASON_COUNT}`;
+    reasonPrev.disabled = reasonPos <= 0;
+    reasonNext.disabled = reasonPos >= REASON_COUNT - 1;
+
+    reasonDots.forEach((dot, index) => {
+      dot.classList.toggle("is-seen", index < reasonPos);
+      dot.classList.toggle("is-current", index === reasonPos);
+    });
+  }
+
+  function layoutReasons(instant = false) {
+    if (instant) reasonsStack.classList.add("is-instant");
+
+    reasonCards.forEach((card) => {
+      const index = Number(card.dataset.index);
+      const offset = reasonsOrder.indexOf(index) - reasonPos;
+      const tilt = REASON_TILTS[index % REASON_TILTS.length];
+      card.style.setProperty("--tilt", `${tilt}deg`);
+
+      if (offset === 0) {
+        card.style.transform = `translate3d(0, 0, 0) rotate(${tilt}deg) scale(1)`;
+        card.style.opacity = "1";
+        card.style.zIndex = String(REASON_COUNT);
+        card.classList.add("is-top");
+        card.setAttribute("aria-hidden", "false");
+      } else if (offset > 0 && offset < REASON_VISIBLE) {
+        card.style.transform =
+          `translate3d(0, ${offset * 14}px, ${-offset * 34}px) rotate(${tilt * 0.5 + offset * 0.9}deg) scale(${1 - offset * 0.05})`;
+        card.style.opacity = String(1 - offset * 0.12);
+        card.style.zIndex = String(REASON_COUNT - offset);
+        card.classList.remove("is-top");
+        card.setAttribute("aria-hidden", "true");
+      } else {
+        const dir = offset < 0 ? -1 : 1;
+        card.style.transform =
+          `translate3d(${dir * 46}px, ${offset < 0 ? -12 : 12}px, -140px) rotate(${dir * 7}deg) scale(0.88)`;
+        card.style.opacity = "0";
+        card.style.zIndex = "0";
+        card.classList.remove("is-top");
+        card.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    if (instant) {
+      void reasonsStack.offsetWidth;
+      reasonsStack.classList.remove("is-instant");
+    }
+
+    updateReasonNav();
+  }
+
+  function popReasonCard(card) {
+    if (!card || prefersReducedMotion()) return;
+    card.classList.remove("is-incoming");
+    void card.offsetWidth;
+    card.classList.add("is-incoming");
+  }
+
+  function flashReasonDeck() {
+    const deck = reasonsStack.closest(".reasons-deck");
+    if (!deck || prefersReducedMotion()) return;
+    deck.classList.remove("is-swiping");
+    void deck.offsetWidth;
+    deck.classList.add("is-swiping");
+    window.setTimeout(() => deck.classList.remove("is-swiping"), 620);
+  }
+
+  function buildReasonCards() {
+    reasonsStack.innerHTML = "";
+    reasonCards = [];
+
+    REASONS.forEach((reason, index) => {
+      const card = document.createElement("article");
+      card.className = "reason-card";
+      card.dataset.index = String(index);
+      card.setAttribute("role", "group");
+      card.setAttribute("aria-roledescription", "card");
+      card.setAttribute("aria-label", `Reason ${index + 1} of ${REASON_COUNT}`);
+      card.innerHTML = `
+        <span class="reason-card__pin" aria-hidden="true">♥</span>
+        <span class="reason-card__num">Reason No. ${pad(index + 1)}</span>
+        <span class="reason-card__quote" aria-hidden="true">&ldquo;</span>
+        <p class="reason-card__text">${reason}</p>
+        <span class="reason-card__scribble" aria-hidden="true">♡</span>
+      `;
+      reasonsStack.appendChild(card);
+      reasonCards.push(card);
+    });
+  }
+
+  function resetReasonsDeck(options = {}) {
+    reasonsOrder = REASONS.map((reason, index) => index);
+    if (options.shuffle) {
+      for (let i = reasonsOrder.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [reasonsOrder[i], reasonsOrder[j]] = [reasonsOrder[j], reasonsOrder[i]];
+      }
+    }
+    reasonPos = 0;
+    reasonAnimating = false;
+    reasonDrag = null;
+    buildReasonDots();
+    layoutReasons(true);
+  }
+
+  function bounceReasonCard(direction) {
+    const card = reasonTopCard();
+    if (!card) return;
+    card.classList.add("is-bouncing");
+    card.style.transform =
+      `translate3d(${direction === "next" ? -26 : 26}px, 0, 0) rotate(${direction === "next" ? -5 : 5}deg) scale(0.99)`;
+    window.setTimeout(() => {
+      card.classList.remove("is-bouncing");
+      layoutReasons();
+    }, 200);
+  }
+
+  function commitReasonSwipe(direction) {
+    if (reasonAnimating) return;
+
+    if (direction === "next" && reasonPos >= REASON_COUNT - 1) {
+      bounceReasonCard("next");
+      showToast("That's the last one... but there are always more, babyy. 💗");
+      return;
+    }
+    if (direction === "prev" && reasonPos <= 0) {
+      bounceReasonCard("prev");
+      return;
+    }
+
+    reasonAnimating = true;
+    const card = reasonTopCard();
+    const width = reasonsStack.offsetWidth || 340;
+    const dir = direction === "next" ? -1 : 1;
+
+    card.classList.remove("is-dragging", "is-incoming", "is-bouncing");
+    card.classList.add("is-flying");
+    card.style.transform =
+      `translate3d(${dir * width * 1.35}px, ${dir * 26}px, 0) rotate(${dir * 24}deg) scale(0.9)`;
+    card.style.opacity = "0";
+
+    burstFromElement(reasonsStack, 8);
+    flashReasonDeck();
+
+    window.setTimeout(() => {
+      reasonPos += direction === "next" ? 1 : -1;
+
+      // Snap the leaving card to its new stack slot without animating.
+      card.classList.add("no-anim");
+      card.classList.remove("is-flying");
+      layoutReasons(true);
+      void card.offsetWidth;
+      card.classList.remove("no-anim");
+
+      reasonAnimating = false;
+      popReasonCard(reasonTopCard());
+    }, 440);
+  }
+
+  function endReasonDrag(event) {
+    if (!reasonDrag || (event && event.pointerId !== reasonDrag.id)) return;
+
+    const drag = reasonDrag;
+    reasonDrag = null;
+
+    const card = reasonTopCard();
+    if (card) card.classList.remove("is-dragging");
+
+    const threshold = Math.min(130, (reasonsStack.offsetWidth || 340) * 0.25);
+
+    if (drag.axis === "x" && Math.abs(drag.x) > threshold) {
+      commitReasonSwipe(drag.x < 0 ? "next" : "prev");
+    } else if (!drag.axis) {
+      commitReasonSwipe("next");
     } else {
-      state.reasonsRevealed.delete(index);
+      layoutReasons();
     }
   }
 
-  function updateReasonsStatus() {
-    reasonsStatus.textContent = `${state.reasonsRevealed.size} of ${REASONS.length} reasons opened`;
-  }
+  reasonsStack.addEventListener("pointerdown", (event) => {
+    if (reasonAnimating || reasonPos < 0) return;
+    if (event.button !== undefined && event.button !== 0) return;
 
-  function renderReasons() {
-    reasonsGrid.innerHTML = "";
+    const card = reasonTopCard();
+    if (!card) return;
 
-    REASONS.forEach((reason, index) => {
-      const card = document.createElement("button");
-      card.type = "button";
-      card.className = "reason-card";
-      card.setAttribute("aria-pressed", "false");
-      card.innerHTML = `
-        <span class="reason-card__inner">
-          <span class="reason-face reason-face--front" aria-hidden="false">
-            <span class="reason-card__num">Reason No. ${pad(index + 1)}</span>
-            <span class="reason-card__prompt">open me</span>
-            <span class="reason-card__icon" aria-hidden="true">♡</span>
-          </span>
-          <span class="reason-face reason-face--back" aria-hidden="true">
-            <span class="reason-card__quote" aria-hidden="true">“</span>
-            <span class="reason-card__text">${reason}</span>
-            <span class="reason-card__close-hint">tap to close</span>
-          </span>
-        </span>
-      `;
+    reasonDrag = {
+      id: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      x: 0,
+      y: 0,
+      axis: null,
+      moved: false
+    };
+    try {
+      reasonsStack.setPointerCapture(event.pointerId);
+    } catch (error) {
+      /* pointer capture is best-effort */
+    }
+    card.classList.add("is-dragging");
+  });
 
-      card.addEventListener("click", () => {
-        setReasonState(card, index, !card.classList.contains("is-revealed"));
-        updateReasonsStatus();
-      });
+  reasonsStack.addEventListener("pointermove", (event) => {
+    if (!reasonDrag || event.pointerId !== reasonDrag.id) return;
 
-      reasonsGrid.appendChild(card);
-      setReasonState(card, index, false);
-    });
+    const dx = event.clientX - reasonDrag.startX;
+    const dy = event.clientY - reasonDrag.startY;
 
-    updateReasonsStatus();
-  }
+    if (!reasonDrag.axis) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      reasonDrag.axis = Math.abs(dx) >= Math.abs(dy) ? "x" : "y";
+    }
+    if (reasonDrag.axis !== "x") return;
 
-  revealAllReasons.addEventListener("click", () => {
-    $$(".reason-card", reasonsGrid).forEach((card, index) => {
-      setReasonState(card, index, true);
-    });
-    updateReasonsStatus();
-    burstFromElement(reasonsGrid, 20);
+    reasonDrag.x = dx;
+    reasonDrag.y = dy;
+    if (Math.abs(dx) > 6) reasonDrag.moved = true;
+
+    const card = reasonTopCard();
+    if (!card) return;
+    const tilt = REASON_TILTS[Number(card.dataset.index) % REASON_TILTS.length];
+    card.style.transform =
+      `translate3d(${dx}px, ${dy * 0.2}px, 0) rotate(${tilt + dx * 0.06}deg) scale(1)`;
+    card.style.opacity = String(Math.max(0.3, 1 - Math.abs(dx) / ((reasonsStack.offsetWidth || 340) * 1.1)));
+  });
+
+  reasonsStack.addEventListener("pointerup", endReasonDrag);
+  reasonsStack.addEventListener("pointercancel", endReasonDrag);
+
+  reasonsStack.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      commitReasonSwipe("prev");
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      commitReasonSwipe("next");
+    }
+  });
+
+  reasonNext.addEventListener("click", () => commitReasonSwipe("next"));
+  reasonPrev.addEventListener("click", () => commitReasonSwipe("prev"));
+
+  shuffleReasonsBtn.addEventListener("click", () => {
+    resetReasonsDeck({ shuffle: true });
+    popReasonCard(reasonTopCard());
+    burstFromElement(reasonsStack, 16);
+    showToast("Shuffled the deck. Swipe away, babyy. 💗");
   });
 
   resetReasonsBtn.addEventListener("click", () => {
-    $$(".reason-card", reasonsGrid).forEach((card, index) => {
-      setReasonState(card, index, false);
-    });
-    updateReasonsStatus();
+    resetReasonsDeck();
+    showToast("Back to the first reason. ♡");
   });
 
-  renderReasons();
+  buildReasonCards();
+  resetReasonsDeck();
 
   /* ============================================================
      Love meter
@@ -1930,8 +2154,7 @@
     setLetterPage(0);
 
     // Reasons.
-    $$(".reason-card", reasonsGrid).forEach((card, index) => setReasonState(card, index, false));
-    updateReasonsStatus();
+    resetReasonsDeck();
 
     // Love meter.
     resetLoveMeter();
