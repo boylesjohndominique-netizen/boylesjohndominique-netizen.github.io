@@ -2197,14 +2197,22 @@ main {
   padding-top: 6px;
 }
 
+@property --letter-ink {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
 .letter-pages {
   position: relative;
 }
 
 .letter-page {
-  font-family: var(--font-display);
-  font-size: clamp(1.04rem, 2.1vw, 1.16rem);
-  line-height: 1.82;
+  font-family: var(--font-hand);
+  font-weight: 500;
+  font-size: clamp(1.3rem, 2.7vw, 1.58rem);
+  line-height: 1.72;
+  letter-spacing: 0.01em;
   color: #4a343b;
 }
 
@@ -2216,24 +2224,61 @@ main {
   margin-bottom: 1em;
 }
 
+/* Writing animation — an angled, feathered "ink" wipe reveals each
+   paragraph like it's being written by hand, top-left to bottom-right. */
+.letter-page.is-active p {
+  -webkit-mask-image: linear-gradient(150deg,
+    #000 0%,
+    #000 var(--letter-ink),
+    transparent calc(var(--letter-ink) + 16%));
+  mask-image: linear-gradient(150deg,
+    #000 0%,
+    #000 var(--letter-ink),
+    transparent calc(var(--letter-ink) + 16%));
+  animation: letter-write 1.35s cubic-bezier(0.36, 0, 0.2, 1) both;
+}
+
+.letter-page.is-active p:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.letter-page.is-active p:nth-child(2) {
+  animation-delay: 0.95s;
+}
+
+.letter-page.is-active p:nth-child(3) {
+  animation-delay: 1.9s;
+}
+
+.letter-page.is-active p:nth-child(4) {
+  animation-delay: 2.85s;
+}
+
+@keyframes letter-write {
+  from { --letter-ink: 0%; }
+  to { --letter-ink: 100%; }
+}
+
 .letter-page p:first-child::first-letter {
   float: left;
-  font-size: 3.4em;
-  line-height: 0.82;
-  padding: 0.08em 0.1em 0 0;
+  font-size: 3em;
+  line-height: 0.72;
+  padding: 0.1em 0.12em 0 0;
   color: var(--rose-deep);
-  font-family: var(--font-display);
+  font-family: var(--font-hand);
+  font-weight: 600;
 }
 
 .letter-page p.letter-signoff {
   margin-top: 1.4em;
-  font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-family: var(--font-hand);
+  font-size: 1.35rem;
+  line-height: 1.5;
   color: var(--ink-soft);
 }
 
 .letter-signoff .handwritten {
-  font-size: 2.1rem;
+  font-size: 2.3rem;
   line-height: 1.2;
   color: var(--rose-deep);
 }
@@ -4063,6 +4108,12 @@ main {
 
   .reason-card__inner {
     transition: none !important;
+  }
+
+  .letter-page.is-active p {
+    animation: none !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
   }
 
   .particle-layer {
