@@ -1603,7 +1603,12 @@
   let loadToken = 0;   // guards against out-of-order (slow) track loads
   let currentBlobUrl = null; // object URL for the song currently loaded
   let musicIntent = false;   // true only while the visitor wants music playing
-  let stallTimer = null;     // watchdog that revives stalled playback on phones
+  let recoveryAttempts = 0;  // consecutive recovery tries since the song last played
+  let recoveryNudged = false; // have we already asked the visitor to tap play?
+  let recoveryCooldownUntil = 0; // stops tight resume loops on stubborn phones
+  let lastProgressAt = 0;    // heartbeat: last time the playhead actually moved
+  let lastProgressTime = -1; // heartbeat: the playhead value at that moment
+  let healthySince = 0;      // when the current uninterrupted playback began
 
   // Free a used blob URL, but only after the <audio> element has moved on, so
   // we never abort a read that is still in progress.
@@ -1748,6 +1753,7 @@
     trackIndex = (index + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
     loadToken += 1;
     fallbackAttempted = false;
+    noteHealthyPlayback();
     const track = MUSIC_TRACKS[trackIndex];
     updateNowPlaying();
     setMusicStatus(`Loading “${track.title}”…`);
@@ -1904,6 +1910,7 @@
   // music button); if the song is still loading it starts the moment it's ready.
   function beginSoundtrack() {
     musicIntent = true;
+    noteHealthyPlayback();
     if (!audio.paused) return;
     if (!audio.src) {
       pendingAutoplay = true;
@@ -1922,7 +1929,10 @@
       beginSoundtrack();
       return;
     }
-    // Later taps can also wake the music back up if the phone paused it.
+    // Later taps can also wake the music back up if the phone paused it. A tap
+    // is exactly the gesture the browser wants, so clear any stale block too.
+    autoplayBlocked = false;
+    noteHealthyPlayback();
     resumeIfNeeded();
   }
 
@@ -1932,6 +1942,7 @@
 
   function tryStartMusic() {
     musicIntent = true;
+    noteHealthyPlayback();
     playCurrent({ silent: true }).then((ok) => {
       if (ok) return;
       autoplayBlocked = true;
@@ -1945,13 +1956,58 @@
   // loss). This quietly brings the music back whenever we still want it playing.
   let resumeScheduled = false;
 
-  function resumeIfNeeded() {
-    if (!musicIntent || audioFailed || autoplayBlocked) return;
-    if (!audio.paused) return;
+  // Called whenever the song is genuinely making sound again, so the next
+  // interruption gets a fresh set of recovery attempts.
+  function noteHealthyPlayback() {
+    recoveryAttempts = 0;
+    recoveryNudged = false;
+    recoveryCooldownUntil = 0;
+  }
+
+  // Bring the soundtrack back when we still want it but the phone went quiet.
+  // Handles both a hard pause and the sneaky "not paused, but silent" stall.
+  function recoverPlayback() {
+    if (!musicIntent || audioFailed || autoplayBlocked || audio.ended) return;
     if (document.visibilityState !== "visible") return;
-    playCurrent({ silent: true }).then((ok) => {
-      if (!ok) autoplayBlocked = true;
-    });
+    if (Date.now() < recoveryCooldownUntil) return;
+
+    // If the phone keeps killing playback no matter what, stop looping forever
+    // and ask the visitor for a tap instead.
+    if (recoveryAttempts >= 4) {
+      if (!recoveryNudged) {
+        recoveryNudged = true;
+        setMusicStatus("The music needs a little tap. Press play to bring it back. 🎶");
+        showToast("Tap the music button to bring our soundtrack back. 🎶");
+      }
+      return;
+    }
+
+    recoveryAttempts += 1;
+    recoveryCooldownUntil = Date.now() + 1500;
+
+    if (audio.paused) {
+      playCurrent({ silent: true }).then((ok) => {
+        if (!ok) autoplayBlocked = true;
+      });
+      return;
+    }
+
+    // It reports "playing" but nothing is coming out — nudge the playhead so the
+    // browser drops the dead buffer and re-requests the stream.
+    setMusicStatus("Buffering… hang on, babyy. 🎶");
+    try {
+      audio.currentTime = Math.max(0, audio.currentTime - 0.1);
+    } catch (error) {
+      /* The stream isn't seekable yet. */
+    }
+    const attempt = audio.play();
+    if (attempt && typeof attempt.catch === "function") {
+      attempt.catch(() => {});
+    }
+  }
+
+  function resumeIfNeeded() {
+    recoverPlayback();
   }
 
   function scheduleResume(delay) {
@@ -1967,33 +2023,51 @@
     if (document.visibilityState === "visible") scheduleResume(400);
   });
 
-  // If a stream stalls on a slow connection, give it a nudge to keep going.
-  function clearStallTimer() {
-    if (stallTimer) {
-      window.clearTimeout(stallTimer);
-      stallTimer = null;
+  // On phones the element can report "playing" while it silently sits in a dead
+  // buffer stall — which is exactly why a song can look like it's running but
+  // make no sound. This heartbeat watches the real playhead (not the paused
+  // flag) and revives the song the moment it stops moving, even if no
+  // "stalled"/"waiting" event ever fires.
+  window.setInterval(() => {
+    if (!musicIntent || audioFailed || autoplayBlocked || audio.ended) {
+      lastProgressTime = -1;
+      return;
     }
-  }
 
-  ["stalled", "waiting"].forEach((type) => {
-    audio.addEventListener(type, () => {
-      if (!musicIntent) return;
-      clearStallTimer();
-      stallTimer = window.setTimeout(() => {
-        if (musicIntent && audio.paused && !audioFailed && !autoplayBlocked) {
-          playCurrent({ silent: true });
-        }
-      }, 4000);
-    });
-  });
+    const now = Date.now();
+    const position = audio.currentTime;
 
-  ["playing", "canplay", "timeupdate", "progress"].forEach((type) => {
-    audio.addEventListener(type, clearStallTimer);
-  });
+    if (audio.seeking) {
+      lastProgressTime = position;
+      lastProgressAt = now;
+      return;
+    }
+
+    if (lastProgressTime < 0) {
+      lastProgressTime = position;
+      lastProgressAt = now;
+      return;
+    }
+
+    if (position > lastProgressTime + 0.2) {
+      lastProgressTime = position;
+      lastProgressAt = now;
+      // Only treat playback as "healthy" after it has run uninterrupted for a
+      // while — this stops a phone that flaps play/pause from looping forever.
+      if (healthySince && now - healthySince > 15000) noteHealthyPlayback();
+      return;
+    }
+
+    if (now - lastProgressAt > 5000) {
+      lastProgressTime = -1;
+      recoverPlayback();
+    }
+  }, 2000);
 
   async function toggleMusic() {
     if (audio.paused) {
       musicIntent = true;
+      noteHealthyPlayback();
       if (!audio.src) {
         loadTrack(trackIndex, { autoplay: true });
         return;
@@ -2033,6 +2107,7 @@
   audio.addEventListener("playing", () => {
     audioFailed = false;
     autoplayBlocked = false;
+    healthySince = Date.now();
     const track = MUSIC_TRACKS[trackIndex];
     setMusicStatus(`Now playing “${track.title}”${track.artist ? " — " + track.artist : ""}. 🎶`);
     setMediaSessionState(true);
@@ -2042,6 +2117,14 @@
   audio.addEventListener("pause", () => {
     setMediaSessionState(false);
     updateMusicUI();
+
+    // The visitor still wants music and didn't pause it themselves — the phone
+    // (or another app) did. Try to bring it back instead of leaving it silent.
+    if (musicIntent && !audio.ended && !audioFailed && !autoplayBlocked) {
+      scheduleResume(500);
+      return;
+    }
+
     if (!audioFailed && !autoplayBlocked && state.current !== "welcome") {
       setMusicStatus("Music paused. Press play whenever you want it back.");
     }
@@ -2059,6 +2142,7 @@
     const mediaHandlers = {
       play: () => {
         musicIntent = true;
+        noteHealthyPlayback();
         playCurrent();
       },
       pause: () => {
