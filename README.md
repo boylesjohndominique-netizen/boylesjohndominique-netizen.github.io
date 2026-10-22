@@ -186,11 +186,21 @@ once before any repeats, and it automatically moves to the next random song when
 The **◀ / ▶** buttons skip through the shuffled order; clicking a row in the track list jumps
 straight to that song.
 
-**Start on open:** the first screen preloads a random song, and tapping **Open Your Surprise**
-starts it playing (any first tap or keypress works too). If the song is still loading when the
-visitor taps, it starts the moment it's ready. On desktop the music may also begin as soon as the
-page loads. Every modern browser blocks audio that starts without a user gesture, so this is the
-standard behaviour and cannot be bypassed in a normal web page.
+**Start on open:** the first screen preloads one random song, and tapping **Open Your Surprise**
+starts it playing (a first tap or keypress works too). Playback is requested directly during the
+gesture so iPhone Safari can allow it. A slow download continues buffering without repeated seeks.
+The play/pause button also cancels playback while loading, and selecting the current song keeps
+its position. Switching chapters does not change the audio source.
+
+**Returning to the page:** this tab remembers the current chapter, letter page, reasons card,
+opened gift, discoveries, song, playback position, and volume in `sessionStorage`. A refresh or
+an iPhone tab reload restores that progress; tap play if Safari needs a fresh gesture. Deliberate
+pauses stay paused. **Replay from the start** resets the saved experience. This is temporary data
+in your browser tab and is never sent to a server. Storage being blocked does not disable the site.
+
+The 3D heart is initialized only when its chapter opens. Phones use a lower graphics resolution,
+simpler geometry, fewer decorations, and a 30 fps cap. Rendering stops outside that chapter or
+in a background tab. If WebGL fails, the love meter and its buttons remain usable.
 
 ### Use your own songs
 
@@ -211,10 +221,10 @@ browser asks for the song in the background with a request that can't include th
 header, so every track comes back as that HTML page instead of audio and none of them play — even
 though the page, styles, and photos look fine.
 
-To handle this, the player fetches each song from the page first (sending the
-`ngrok-skip-browser-warning` header) and plays it from a temporary blob URL. This works on ngrok
-and is harmless on normal hosting. If a direct file load is the only option it still falls back to
-the plain `<audio src="...">` path.
+GitHub Pages and ordinary hosts stream directly through `<audio>`, allowing playback before a
+complete song download. Only on ngrok, after a direct media error, the player retries with the
+`ngrok-skip-browser-warning` header and a temporary blob URL. Fetches time out after 25 seconds,
+are cancelled when the track changes, and old blob URLs are released after switching sources.
 
 **Copyright:** Do not download songs from unofficial sources. Use music you created, purchased,
 or have written permission to use. GitHub Pages is public, so any file you add is publicly
@@ -388,6 +398,7 @@ The current palette is designed for dark ink on cream and white on burgundy/rose
 - There is no server, database, analytics, or tracking.
 - It does not request camera, microphone, or location access.
 - It does not use cookies or local storage.
+- It uses temporary `sessionStorage` in the current tab to restore your place after a reload.
 - The secret question is a playful interaction, **not real authentication** and not a way to
   protect private information.
 - Do not put private addresses, passwords, financial details, or other sensitive information
@@ -566,6 +577,24 @@ The website also skips confetti and floating hearts when reduced motion is enabl
 ---
 
 ## Quality assurance checklist
+
+### Run the reliability regression suite
+
+The website itself still needs no dependencies or build step. Optional browser tests use
+Playwright and start their own local server with audio range-request support:
+
+```bash
+npm install --no-save --package-lock=false playwright
+npx playwright install chromium webkit
+node tests/browser-regression.cjs
+```
+
+The suite checks all 13 real MP3 files, chapter controls, letters, dialogs, touch cancellation,
+saved progress, explicit replay, layouts from 320–1440 px, missing music, blocked storage,
+slow downloads, pause during loading, rapid song selection, playback position restoration,
+bounded stall recovery, and the mobile 3D lifecycle. Chromium covers pointer/touch interactions;
+Windows WebKit uses keyboard activation because its high-DPI click coordinates can be inconsistent.
+These browser checks do not replace a final test on a physical iPhone over its actual connection.
 
 ### Flows to try
 
