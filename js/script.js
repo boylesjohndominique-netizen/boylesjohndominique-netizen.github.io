@@ -525,7 +525,7 @@
       dot.type = "button";
       dot.className = "page-dot";
       dot.setAttribute("aria-label", `Go to letter page ${index + 1}`);
-      dot.addEventListener("click", () => setLetterPage(index));
+      dot.addEventListener("click", () => setLetterPage(index, { focus: true }));
       letterDots.appendChild(dot);
     });
   }
@@ -554,15 +554,15 @@
     letterProgressText.textContent = `Page ${nextIndex + 1} of ${pageCount}`;
     letterPrev.disabled = nextIndex === 0;
     letterNext.textContent = nextIndex === pageCount - 1 ? "On to our memories →" : "Next page →";
-    saveProgress();
-
     if (options.focus) {
       const heading = letterPages[nextIndex];
       if (heading) {
         heading.setAttribute("tabindex", "-1");
         heading.focus({ preventScroll: true });
       }
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     }
+    saveProgress();
   }
 
   letterPrev.addEventListener("click", () => setLetterPage(state.letterPage - 1, { focus: true }));
