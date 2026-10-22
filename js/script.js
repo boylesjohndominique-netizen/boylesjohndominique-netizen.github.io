@@ -15,6 +15,16 @@
 
   const pad = (value) => String(value).padStart(2, "0");
 
+  const VISIT_KEY = "wyn-birthday-visit-v1";
+  let progressReady = false;
+  let savedVisit = null;
+  try {
+    savedVisit = JSON.parse(sessionStorage.getItem(VISIT_KEY));
+    if (savedVisit?.version !== 1) savedVisit = null;
+  } catch (error) {
+    // Private browsing or disabled storage must never stop the experience.
+  }
+
   /* ---------- State (kept for the whole visit) ---------- */
   const CHAPTERS = [
     { id: "reveal", title: "The Big Day" },
@@ -229,6 +239,7 @@
     if (window.Love3D) {
       window.Love3D.setActive(name === "love");
     }
+    saveProgress();
   }
 
   function goToChapter(id) {
@@ -543,6 +554,7 @@
     letterProgressText.textContent = `Page ${nextIndex + 1} of ${pageCount}`;
     letterPrev.disabled = nextIndex === 0;
     letterNext.textContent = nextIndex === pageCount - 1 ? "On to our memories →" : "Next page →";
+    saveProgress();
 
     if (options.focus) {
       const heading = letterPages[nextIndex];
@@ -1064,6 +1076,7 @@
 
       reasonAnimating = false;
       popReasonCard(reasonTopCard());
+      saveProgress();
     }, 440);
   }
 
@@ -1202,7 +1215,7 @@
     if (window.Love3D) window.Love3D.setProgress(clamped);
   }
 
-  function finishLoveMeter() {
+  function finishLoveMeter(options = {}) {
     paintLove(100);
     lovePercent.textContent = "∞%";
     loveBadge.textContent = "off the charts";
@@ -1216,8 +1229,11 @@
     loveReset.hidden = false;
     loveRunning = false;
     state.loveMeasured = true;
-    burstFromElement(loveBar, 28);
-    if (window.Love3D) window.Love3D.celebrate();
+    saveProgress();
+    if (options.celebrate !== false) {
+      burstFromElement(loveBar, 28);
+      if (window.Love3D) window.Love3D.celebrate();
+    }
   }
 
   function measureLove() {
@@ -2183,9 +2199,26 @@
   });
 
   buildTrackList();
-  trackIndex = Math.floor(Math.random() * MUSIC_TRACKS.length);
+  const savedMusic = savedVisit?.music;
+  trackIndex = Number.isInteger(savedMusic?.index) && MUSIC_TRACKS[savedMusic.index]
+    ? savedMusic.index : Math.floor(Math.random() * MUSIC_TRACKS.length);
+  if (Number.isFinite(savedMusic?.volume)) {
+    audio.volume = Math.max(0, Math.min(savedMusic.volume, 1));
+    volumeRange.value = Math.round(audio.volume * 100);
+    volumeValue.textContent = `${volumeRange.value}%`;
+  }
   updateMusicUI();
-  loadTrack(trackIndex).then(tryStartMusic);
+  loadTrack(trackIndex, { position: savedMusic?.position });
+  if (savedMusic?.intent) {
+    musicIntent = true;
+    autoplayBlocked = true;
+    setMusicStatus("Tap to continue our soundtrack where you left off. 🎶");
+  } else if (savedMusic?.intent === false) {
+    userActivated = true;
+    setMusicStatus("Music paused. Press play whenever you want it back.");
+  } else {
+    setMusicStatus("Our soundtrack starts with your first tap. 🎶");
+  }
 
   /* ============================================================
      Replay
@@ -2193,10 +2226,14 @@
   const replayBtn = $("#replayBtn");
 
   function resetExperience() {
+    progressReady = false;
+    savedVisit = null;
+    try { sessionStorage.removeItem(VISIT_KEY); } catch (error) { /* Storage is optional. */ }
     // Close any open dialog first.
     if (detailDialog.open) closeDialog();
 
     // Stop and rewind music.
+    musicIntent = false;
     try {
       audio.pause();
       audio.currentTime = 0;
@@ -2273,14 +2310,105 @@
     if (layer) layer.innerHTML = "";
 
     showScreen("welcome", { focus: true });
+    progressReady = true;
+    saveProgress();
     showToast("Let's start over, babyy. Same love, fresh adventure. 💗");
   }
 
   replayBtn.addEventListener("click", resetExperience);
 
+  /* ---------- Recover this tab after a refresh or an iPhone tab reload ---------- */
+  function saveProgress() {
+    if (!progressReady) return;
+    const snapshot = {
+      version: 1,
+      current: state.current,
+      visited: [...state.visited],
+      secrets: [...state.secretsFound],
+      revealSeen: state.revealSeen,
+      finalSeen: state.finalSeen,
+      giftOpened: state.giftOpened,
+      giftExtra: !giftExtra.hidden,
+      loveMeasured: state.loveMeasured,
+      gameDone: state.gameDone,
+      secretPassed: !secretSuccess.hidden,
+      letterPage: state.letterPage,
+      reasonsOrder,
+      reasonPos,
+      scrollY: window.scrollY,
+      music: {
+        index: trackIndex,
+        position: resumePosition || audio.currentTime || 0,
+        intent: musicIntent,
+        volume: audio.volume
+      }
+    };
+    try {
+      sessionStorage.setItem(VISIT_KEY, JSON.stringify(snapshot));
+    } catch (error) {
+      // Storage limits must never break a button, navigation, or playback.
+    }
+  }
+
+  function restoreProgress() {
+    if (!savedVisit || !screens.has(savedVisit.current)) return;
+    state.visited = new Set(Array.isArray(savedVisit.visited)
+      ? savedVisit.visited.filter((id) => chapterIndex(id) !== -1) : []);
+    state.secretsFound = new Set(Array.isArray(savedVisit.secrets) ? savedVisit.secrets : []);
+    state.revealSeen = Boolean(savedVisit.revealSeen);
+    state.finalSeen = Boolean(savedVisit.finalSeen);
+    setLetterPage(Number.isInteger(savedVisit.letterPage) ? savedVisit.letterPage : 0);
+
+    const order = savedVisit.reasonsOrder;
+    if (Array.isArray(order) && order.length === REASON_COUNT && new Set(order).size === REASON_COUNT &&
+        order.every((index) => Number.isInteger(index) && index >= 0 && index < REASON_COUNT)) {
+      reasonsOrder = order;
+      reasonPos = Math.max(0, Math.min(Number(savedVisit.reasonPos) || 0, REASON_COUNT - 1));
+      layoutReasons(true);
+    }
+    if (savedVisit.secretPassed) {
+      secretCard.hidden = true;
+      secretSuccess.hidden = false;
+    }
+    if (savedVisit.giftOpened) {
+      state.giftOpened = true;
+      giftBox.classList.add("is-open");
+      giftBox.setAttribute("aria-expanded", "true");
+      giftHint.textContent = "Opened with love 💗";
+      giftReveal.hidden = false;
+      giftExtra.hidden = !savedVisit.giftExtra;
+      giftMore.setAttribute("aria-expanded", String(Boolean(savedVisit.giftExtra)));
+      unlockSecretMemory(false);
+    }
+    if (savedVisit.loveMeasured) {
+      finishLoveMeter({ celebrate: false });
+    }
+    if (savedVisit.gameDone) {
+      state.gameDone = true;
+      loveYes.disabled = true;
+      loveYes.textContent = "I love you too, babyy! 💗";
+      dodgeField.hidden = true;
+      showGameResponse("I knew it. Of course you do — and I love you more, babyy. 💗", true, LOVE_IMAGE);
+    }
+    showScreen(savedVisit.current, { focus: false });
+    const scrollY = Number(savedVisit.scrollY) || 0;
+    requestAnimationFrame(() => window.scrollTo(0, scrollY));
+  }
+
+  // Save after handlers have applied their changes, including dialog secrets.
+  document.addEventListener("click", () => window.setTimeout(saveProgress, 0));
+  document.addEventListener("change", saveProgress);
+  window.addEventListener("pagehide", saveProgress);
+  document.addEventListener("visibilitychange", () => {
+    document.body.classList.toggle("is-background", document.hidden);
+    if (document.hidden) saveProgress();
+  });
+
   /* ============================================================
      Initial setup
   ============================================================ */
+  restoreProgress();
+  progressReady = true;
   updateFinalStats();
-  updateChapterUI("welcome");
+  updateChapterUI(state.current);
 })();
