@@ -888,6 +888,7 @@
   let reasonPos = 0;
   let reasonCards = [];
   let reasonAnimating = false;
+  let reasonSwipeTimer = null;
   let reasonDrag = null;
   let reasonDots = [];
 
@@ -920,6 +921,7 @@
     reasonCards.forEach((card) => {
       const index = Number(card.dataset.index);
       const offset = reasonsOrder.indexOf(index) - reasonPos;
+      card.style.visibility = offset >= 0 && offset < REASON_VISIBLE ? "visible" : "hidden";
       const tilt = REASON_TILTS[index % REASON_TILTS.length];
       card.style.setProperty("--tilt", `${tilt}deg`);
 
@@ -995,6 +997,8 @@
   }
 
   function resetReasonsDeck(options = {}) {
+    window.clearTimeout(reasonSwipeTimer);
+    reasonCards.forEach((card) => card.classList.remove("is-flying", "is-dragging", "is-incoming", "is-bouncing"));
     reasonsOrder = REASONS.map((reason, index) => index);
     if (options.shuffle) {
       for (let i = reasonsOrder.length - 1; i > 0; i -= 1) {
@@ -1048,7 +1052,7 @@
     burstFromElement(reasonsStack, 8);
     flashReasonDeck();
 
-    window.setTimeout(() => {
+    reasonSwipeTimer = window.setTimeout(() => {
       reasonPos += direction === "next" ? 1 : -1;
 
       // Snap the leaving card to its new stack slot without animating.
@@ -1132,7 +1136,11 @@
   });
 
   reasonsStack.addEventListener("pointerup", endReasonDrag);
-  reasonsStack.addEventListener("pointercancel", endReasonDrag);
+  reasonsStack.addEventListener("pointercancel", () => {
+    reasonDrag = null;
+    reasonTopCard()?.classList.remove("is-dragging");
+    layoutReasons();
+  });
 
   reasonsStack.addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft") {
