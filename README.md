@@ -226,6 +226,11 @@ complete song download. Only on ngrok, after a direct media error, the player re
 `ngrok-skip-browser-warning` header and a temporary blob URL. Fetches time out after 25 seconds,
 are cancelled when the track changes, and old blob URLs are released after switching sources.
 
+**Encoding:** the bundled songs are 128 kbps stereo MP3s at 44.1 kHz so they start quickly and
+stream smoothly on mobile data; the three tracks that were already 64 kbps were left untouched.
+Encode new 192 kbps or larger files down to about 128 kbps instead of shipping full-quality
+masters. Dropping below roughly 96 kbps starts to sound rough on headphones.
+
 **Copyright:** Do not download songs from unofficial sources. Use music you created, purchased,
 or have written permission to use. GitHub Pages is public, so any file you add is publicly
 downloadable.
