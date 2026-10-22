@@ -47,7 +47,13 @@ async function activate(locator) {
     await locator.waitFor({ state: "visible" });
     await locator.press("Enter");
   } else if (await locator.page().evaluate(() => navigator.maxTouchPoints > 0)) {
-    await locator.tap();
+    try {
+      await locator.tap();
+    } catch (error) {
+      // Windows can report touch points even when the context has no touch
+      // support enabled; fall back to a normal click in that case.
+      await locator.click();
+    }
   } else await locator.click();
 }
 async function chapter(page, name) {
@@ -59,6 +65,12 @@ async function chapter(page, name) {
     const forward = index < names.indexOf(name);
     await activate(page.locator(forward ? "#nextBtn" : "#prevBtn"));
     index += forward ? 1 : -1;
+    // Let the synchronous chapter change land before the next key press.
+    await page.waitForFunction(
+      (expected) => document.querySelector(".screen.is-active")?.dataset.screen === expected,
+      names[index],
+      { timeout: 5000 }
+    );
   }
   check(await page.locator(`#screen-${name}`).isVisible(), `${name} navigation`);
 }
