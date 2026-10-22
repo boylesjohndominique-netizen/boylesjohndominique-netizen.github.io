@@ -17,9 +17,12 @@
   }
 
   const reducedQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const mobile = window.matchMedia("(pointer: coarse)").matches;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
   let ready = false;
+  let failed = false;
+  let contextLost = false;
   let renderer;
   let scene;
   let camera;
@@ -35,6 +38,7 @@
 
   let rafId = null;
   let pendingFrame = false;
+  let lastFrameAt = 0;
   let active = false;
   let dragging = false;
   let progress = 0;
@@ -119,7 +123,7 @@
       (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * scale;
 
     shape.moveTo(px(0), py(0));
-    for (let t = 0; t <= Math.PI * 2 + 0.001; t += Math.PI / 90) {
+    for (let t = 0; t <= Math.PI * 2 + 0.001; t += Math.PI / 48) {
       shape.lineTo(px(t), py(t));
     }
 
@@ -128,8 +132,8 @@
       bevelEnabled: true,
       bevelThickness: 0.28,
       bevelSize: 0.24,
-      bevelSegments: 14,
-      curveSegments: 24,
+      bevelSegments: mobile ? 5 : 8,
+      curveSegments: 12,
       steps: 1
     });
     geometry.center();
@@ -148,12 +152,12 @@
 
     renderer = new THREE.WebGLRenderer({
       canvas,
-      antialias: true,
+      antialias: !mobile,
       alpha: true,
-      powerPreference: "high-performance"
+      powerPreference: mobile ? "low-power" : "default"
     });
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.25 : 1.5));
     if ("outputEncoding" in renderer) renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.06;
@@ -199,7 +203,7 @@
       emissiveIntensity: 0.12
     });
 
-    const orbiterCount = 6;
+    const orbiterCount = mobile ? 3 : 6;
     for (let i = 0; i < orbiterCount; i += 1) {
       const mesh = new THREE.Mesh(heartGeometry, orbiterMaterial);
       const angle = (i / orbiterCount) * Math.PI * 2;
@@ -215,7 +219,7 @@
       orbiters.push(mesh);
     }
 
-    const sparkleCount = 90;
+    const sparkleCount = mobile ? 40 : 70;
     const positions = new Float32Array(sparkleCount * 3);
     for (let i = 0; i < sparkleCount; i += 1) {
       const r = 1.9 + Math.random() * 1.6;
@@ -260,7 +264,8 @@
     lavLight.position.set(3, -0.6, 2.4);
     scene.add(lavLight);
 
-    new ResizeObserver(resize).observe(container);
+    if (typeof ResizeObserver === "function") new ResizeObserver(resize).observe(container);
+    else window.addEventListener("resize", resize, { passive: true });
     resize();
     ready = true;
   }
@@ -279,10 +284,11 @@
   /* ---------- render loop ---------- */
 
   function requestRender() {
-    if (!ready || pendingFrame || rafId !== null) return;
+    if (!ready || !active || contextLost || document.hidden || pendingFrame || rafId !== null) return;
     pendingFrame = true;
     requestAnimationFrame(() => {
       pendingFrame = false;
+      if (!active || contextLost || document.hidden || failed) return;
       tick(0.016);
       renderer.render(scene, camera);
     });
@@ -291,11 +297,14 @@
   function start() {
     if (!ready || rafId !== null) return;
     clock.getDelta();
-    loop();
+    lastFrameAt = 0;
+    rafId = requestAnimationFrame(loop);
   }
 
-  function loop() {
+  function loop(now) {
     rafId = requestAnimationFrame(loop);
+    if (mobile && now - lastFrameAt < 1000 / 30) return;
+    lastFrameAt = now;
     tick(Math.min(clock.getDelta(), 0.05));
     renderer.render(scene, camera);
   }
@@ -402,6 +411,17 @@
   }
 
   function bindEvents() {
+    canvas.addEventListener("webglcontextlost", (event) => {
+      event.preventDefault();
+      contextLost = true;
+      stop();
+      container.classList.add("love3d--off");
+    });
+    canvas.addEventListener("webglcontextrestored", () => {
+      contextLost = false;
+      container.classList.remove("love3d--off");
+      resume();
+    });
     canvas.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
@@ -422,14 +442,22 @@
   /* ---------- public API ---------- */
 
   function resume() {
-    if (!ready || !active || document.hidden) return;
-    if (reducedQuery.matches) requestRender();
+    if (!ready || !active || contextLost || document.hidden) return;
+    if (reducedQuery.matches) {
+      stop();
+      requestRender();
+    }
     else start();
   }
 
   function setActive(value) {
     active = Boolean(value);
-    if (active) resume();
+    if (active && !ready && !failed) init();
+    if (!ready || contextLost) return;
+    if (active) {
+      resize();
+      resume();
+    }
     else stop();
   }
 
@@ -466,6 +494,10 @@
       if (loveScreen && !loveScreen.hidden) setActive(true);
       else requestRender();
     } catch (error) {
+      failed = true;
+      stop();
+      if (renderer) renderer.dispose();
+      ready = false;
       container.classList.add("love3d--off");
     }
   }
@@ -477,5 +509,7 @@
     reset
   };
 
-  init();
+  // Allocate WebGL textures and geometry only when this chapter is visited.
+  const loveScreen = document.getElementById("screen-love");
+  if (loveScreen && !loveScreen.hidden) setActive(true);
 })();
