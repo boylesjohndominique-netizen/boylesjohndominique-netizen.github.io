@@ -1605,7 +1605,7 @@
   const MUSIC_TRACKS = [
     { title: "seasons", artist: "wave to earth", src: "assets/audio/wave to earth - seasons.mp3" },
     { title: "love.", artist: "wave to earth", src: "assets/audio/wave to earth - love. (Official Lyric Video).mp3" },
-    { title: "double take", artist: "dhruv", src: "assets/audio/dhruv - _double take (Lyrics).mp3" },
+    { title: "double take", artist: "dhruv", src: "assets/audio/dhruv – _double take (Lyrics).mp3" },
     { title: "Godspeed", artist: "Frank Ocean", src: "assets/audio/Frank Ocean - Godspeed.mp3" },
     { title: "Pink Matter", artist: "Frank Ocean", src: "assets/audio/Pink Matter.mp3" },
     { title: "Best Part", artist: "H.E.R. feat. Daniel Caesar", src: "assets/audio/H.E.R. - Best Part (Lyrics) Ft. Daniel Caesar.mp3" },
@@ -1623,7 +1623,6 @@
   let trackIndex = 0;
   let autoplayBlocked = false;
   let userActivated = false;  // true once the visitor has tapped or typed
-  let pendingAutoplay = false; // start as soon as the song finishes loading
   let fallbackAttempted = false; // did we retry this track as a fetched blob?
   const failedTracks = new Set();
   let bag = [];        // shuffle bag: indices left to play this rotation
@@ -1637,22 +1636,26 @@
   let lastProgressAt = 0;    // heartbeat: last time the playhead actually moved
   let lastProgressTime = -1; // heartbeat: the playhead value at that moment
   let healthySince = 0;      // when the current uninterrupted playback began
+  let playPromise = null;
+  let playToken = -1;
+  let blobController = null;
+  let resumePosition = 0;
+  let lastSavedAt = 0;
 
-  // Free a used blob URL, but only after the <audio> element has moved on, so
-  // we never abort a read that is still in progress.
-  function releaseBlobLater(url) {
+  // Release a blob only after the audio source has moved on. Keeping old songs
+  // alive for seconds after every skip wastes scarce memory on an iPhone.
+  function releaseBlob(url) {
     if (!url) return;
-    setTimeout(() => URL.revokeObjectURL(url), 20000);
+    URL.revokeObjectURL(url);
   }
 
   audio.volume = 0.45;
   audio.loop = false;
+  audio.preload = "auto";
 
   const trackLabel = (track) => (track.artist ? `${track.title} — ${track.artist}` : track.title);
 
-  // Tell the phone's lock screen / notification about the song. This keeps the
-  // media session alive so phones are far less likely to silently kill playback
-  // when the screen locks or the visitor switches apps.
+  // Provide lock-screen metadata where the browser supports Media Session.
   function updateMediaSession(track) {
     if (!track || !("mediaSession" in navigator) || typeof window.MediaMetadata !== "function") return;
     try {
@@ -1728,24 +1731,26 @@
 
   function updateMusicUI() {
     const playing = !audio.paused && !audio.ended;
+    const loading = musicIntent && !autoplayBlocked && !audioFailed &&
+      (audio.paused || audio.readyState < 3);
     if (musicCard) musicCard.classList.toggle("is-playing", playing);
     $$(".track", trackList).forEach((item) => item.classList.toggle("is-playing", playing));
 
     musicToggles.forEach((button) => {
       const isTopbarButton = button.classList.contains("music-toggle");
       button.classList.toggle("is-playing", playing);
-      button.setAttribute("aria-pressed", String(playing));
+      button.setAttribute("aria-pressed", String(musicIntent && !autoplayBlocked));
 
       const label = $("[data-music-label]", button);
       if (isTopbarButton) {
         button.setAttribute(
           "aria-label",
-          playing ? "Playing — pause background music" : "Music — play background music"
+          loading ? "Music loading — cancel playback" : playing ? "Playing — pause background music" : "Music — play background music"
         );
-        if (label) label.textContent = playing ? "Playing" : "Music";
+        if (label) label.textContent = loading ? "Loading…" : playing ? "Playing" : "Music";
       } else {
-        button.setAttribute("aria-label", playing ? "Pause music" : "Play music");
-        if (label) label.textContent = playing ? "Pause music" : "Play music";
+        button.setAttribute("aria-label", loading ? "Cancel music playback" : playing ? "Pause music" : "Play music");
+        if (label) label.textContent = loading ? "Loading… tap to pause" : playing ? "Pause music" : "Play music";
       }
     });
   }
@@ -1776,10 +1781,17 @@
     return bag.shift();
   }
 
-  async function loadTrack(index, options = {}) {
+  function loadTrack(index, options = {}) {
     if (!MUSIC_TRACKS.length) return;
     trackIndex = (index + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
     loadToken += 1;
+    if (blobController) blobController.abort();
+    resumePosition = Number.isFinite(options.position) ? Math.max(0, options.position) : 0;
+    lastProgressTime = -1;
+    lastProgressAt = Date.now();
+    healthySince = 0;
+    audioFailed = false;
+    autoplayBlocked = false;
     fallbackAttempted = false;
     noteHealthyPlayback();
     const track = MUSIC_TRACKS[trackIndex];
@@ -1790,39 +1802,40 @@
     // song is downloaded (this is how normal hosts — GitHub Pages, LAN — work).
     // If a host intercepts media requests (ngrok's free welcome screen returns
     // HTML for them), the audio error handler retries with fetch + blob below.
-    if (currentBlobUrl) {
-      releaseBlobLater(currentBlobUrl);
-      currentBlobUrl = null;
-    }
+    const oldBlobUrl = currentBlobUrl;
+    currentBlobUrl = null;
     audio.src = track.src;
+    releaseBlob(oldBlobUrl);
+    updateMusicUI();
 
     if (options.autoplay) {
-      playCurrent({ silent: options.silent });
-    } else if (pendingAutoplay) {
-      // The visitor already tapped while this song was loading — start it now.
-      pendingAutoplay = false;
-      playCurrent({ silent: true }).then((ok) => {
-        if (!ok) autoplayBlocked = true;
-      });
+      playCurrent();
     }
   }
 
   // Download a song ourselves (so we can send the tunnel-bypass header) and
   // play it from a blob URL. Only used when direct streaming is blocked.
-  async function loadTrackFromBlob(index, options = {}) {
-    const token = (loadToken += 1);
+  async function loadTrackFromBlob(index) {
+    const token = loadToken;
     const track = MUSIC_TRACKS[index];
     let objectUrl = null;
+    const controller = new AbortController();
+    blobController = controller;
+    const timeout = window.setTimeout(() => controller.abort(), 25000);
     try {
       const response = await fetch(track.src, {
         headers: { "ngrok-skip-browser-warning": "true" },
-        cache: "no-store"
+        cache: "force-cache",
+        signal: controller.signal
       });
       const type = (response.headers.get("content-type") || "").toLowerCase();
       if (!response.ok || type.indexOf("text/html") !== -1) return false;
       objectUrl = URL.createObjectURL(await response.blob());
     } catch (error) {
       return false;
+    } finally {
+      window.clearTimeout(timeout);
+      if (blobController === controller) blobController = null;
     }
 
     // A newer track started loading while we were fetching — discard this one.
@@ -1831,16 +1844,17 @@
       return false;
     }
 
-    if (currentBlobUrl) releaseBlobLater(currentBlobUrl);
+    const oldBlobUrl = currentBlobUrl;
     currentBlobUrl = objectUrl;
 
     audio.src = objectUrl;
-    playCurrent({ silent: options.silent });
+    releaseBlob(oldBlobUrl);
+    if (musicIntent) playCurrent();
     return true;
   }
 
   function playNext(autoplay = true) {
-    musicIntent = true;
+    musicIntent = autoplay;
     const next = nextRandomIndex(trackIndex);
     if (next === -1) {
       if (!failedTracks.has(trackIndex)) {
@@ -1851,6 +1865,7 @@
       return;
     }
     history.push(trackIndex);
+    if (history.length > 50) history.shift();
     loadTrack(next, { autoplay });
   }
 
@@ -1879,29 +1894,55 @@
       return;
     }
     musicIntent = true;
+    userActivated = true;
+    noteHealthyPlayback();
+    if (index === trackIndex && !audio.error) {
+      playCurrent();
+      return;
+    }
     if (index !== trackIndex) history.push(trackIndex);
     bag = bag.filter((item) => item !== index);
     loadTrack(index, { autoplay: true });
   }
 
-  async function playCurrent(options = {}) {
+  function playCurrent() {
+    if (playPromise && playToken === loadToken) return playPromise;
+    const token = loadToken;
+    playToken = token;
+    // Call play synchronously within the tap. Awaiting a fetch first loses
+    // Safari's user activation and leaves the music permanently blocked.
+    let attempt;
     try {
-      await audio.play();
+      attempt = audio.play();
+    } catch (error) {
+      attempt = Promise.reject(error);
+    }
+    playPromise = Promise.resolve(attempt).then(() => {
+      if (token !== loadToken) return false;
+      if (!musicIntent) {
+        audio.pause();
+        return false;
+      }
       audioFailed = false;
       autoplayBlocked = false;
       return true;
-    } catch (error) {
-      // Blocked autoplay needs another tap; missing files are handled by the error event.
-      if (error && error.name === "NotAllowedError") {
+    }).catch((error) => {
+      if (token !== loadToken) return false;
+      if (error?.name === "NotAllowedError") {
         autoplayBlocked = true;
-        if (!options.silent) setMusicStatus("Tap anywhere to start our soundtrack. 🎶");
+        setMusicStatus("Tap play to start our soundtrack. 🎶");
+        updateMusicUI();
       }
       return false;
-    }
+    }).finally(() => {
+      if (playToken === token) playPromise = null;
+    });
+    return playPromise;
   }
 
   function allTracksFailed() {
     audioFailed = true;
+    musicIntent = false;
     setMusicStatus(
       "I couldn't load the songs. Check that the MP3 files are in assets/audio/ and listed in MUSIC_TRACKS. The rest of the site still works. 💗"
     );
@@ -1913,15 +1954,24 @@
   }
 
   async function handleTrackError() {
+    if (!audio.error) return;
     const index = trackIndex;
+    const token = loadToken;
+
+    if (!navigator.onLine || audio.error.code === 2) {
+      setMusicStatus("The connection paused our music. It will retry when you're back online. 🎶");
+      updateMusicUI();
+      saveProgress();
+      return;
+    }
 
     // Direct streaming failed (usually a tunnel welcome screen returning HTML
     // instead of audio). Retry once by fetching the file with the bypass header.
-    if (!fallbackAttempted) {
+    if (!fallbackAttempted && /(^|\.)ngrok(-free)?\.(app|dev|io)$/i.test(location.hostname)) {
       fallbackAttempted = true;
-      const ok = await loadTrackFromBlob(index, { silent: true });
+      const ok = await loadTrackFromBlob(index);
       if (ok) return;
-      if (index !== trackIndex) return; // a different track is loading now
+      if (token !== loadToken) return;
     }
 
     failedTracks.add(index);
@@ -1930,55 +1980,44 @@
       allTracksFailed();
       return;
     }
-    playNext(true);
+    playNext(musicIntent);
   }
 
   // Browsers only let audio begin after the visitor interacts with the page.
   // This starts the soundtrack right away (used by "Open Your Surprise" and the
   // music button); if the song is still loading it starts the moment it's ready.
   function beginSoundtrack() {
+    if (userActivated && !musicIntent) return;
+    userActivated = true;
     musicIntent = true;
     noteHealthyPlayback();
     if (!audio.paused) return;
     if (!audio.src) {
-      pendingAutoplay = true;
+      loadTrack(trackIndex, { autoplay: true });
       return;
     }
-    pendingAutoplay = false;
-    playCurrent({ silent: true }).then((ok) => {
-      if (!ok) autoplayBlocked = true;
-    });
+    playCurrent();
   }
 
   // First tap/keypress anywhere also begins the music, as a safety net.
-  function markUserActivated() {
+  function markUserActivated(event) {
+    if (event.type === "keydown" && (event.metaKey || event.ctrlKey || event.altKey)) return;
+    if (event.target.closest?.("[data-music-toggle], #musicPrev, #musicNext, #trackList, #volumeRange, #replayBtn")) return;
     if (!userActivated) {
-      userActivated = true;
       beginSoundtrack();
       return;
     }
     // Later taps can also wake the music back up if the phone paused it. A tap
     // is exactly the gesture the browser wants, so clear any stale block too.
-    autoplayBlocked = false;
-    noteHealthyPlayback();
-    resumeIfNeeded();
+    if (musicIntent && audio.paused) {
+      autoplayBlocked = false;
+      playCurrent();
+    }
   }
 
-  ["pointerdown", "keydown", "touchstart"].forEach((type) => {
+  ["pointerdown", "keydown"].forEach((type) => {
     document.addEventListener(type, markUserActivated, { passive: true });
   });
-
-  function tryStartMusic() {
-    musicIntent = true;
-    noteHealthyPlayback();
-    playCurrent({ silent: true }).then((ok) => {
-      if (ok) return;
-      autoplayBlocked = true;
-      if (state.current === "welcome") {
-        showToast("Tap anywhere, babyy — our soundtrack starts on your first tap. 🎶");
-      }
-    });
-  }
 
   // Phones love to silently pause media (screen lock, app switch, audio-focus
   // loss). This quietly brings the music back whenever we still want it playing.
@@ -1997,11 +2036,14 @@
   function recoverPlayback() {
     if (!musicIntent || audioFailed || autoplayBlocked || audio.ended) return;
     if (document.visibilityState !== "visible") return;
+    if (!navigator.onLine) return;
+    // Returning to the page must not reload a song that is still advancing.
+    if (!audio.paused && Date.now() - lastProgressAt < 30000) return;
     if (Date.now() < recoveryCooldownUntil) return;
 
     // If the phone keeps killing playback no matter what, stop looping forever
     // and ask the visitor for a tap instead.
-    if (recoveryAttempts >= 4) {
+    if (recoveryAttempts >= 2) {
       if (!recoveryNudged) {
         recoveryNudged = true;
         setMusicStatus("The music needs a little tap. Press play to bring it back. 🎶");
@@ -2011,27 +2053,21 @@
     }
 
     recoveryAttempts += 1;
-    recoveryCooldownUntil = Date.now() + 1500;
+    recoveryCooldownUntil = Date.now() + 20000;
 
-    if (audio.paused) {
-      playCurrent({ silent: true }).then((ok) => {
-        if (!ok) autoplayBlocked = true;
-      });
+    if (audio.paused && !audio.error) {
+      playCurrent();
       return;
     }
 
-    // It reports "playing" but nothing is coming out — nudge the playhead so the
-    // browser drops the dead buffer and re-requests the stream.
+    // Only reload after a prolonged stall. Seeking backward on every waiting
+    // event discards useful buffers and repeatedly restarts range requests.
     setMusicStatus("Buffering… hang on, babyy. 🎶");
-    try {
-      audio.currentTime = Math.max(0, audio.currentTime - 0.1);
-    } catch (error) {
-      /* The stream isn't seekable yet. */
-    }
-    const attempt = audio.play();
-    if (attempt && typeof attempt.catch === "function") {
-      attempt.catch(() => {});
-    }
+    resumePosition = audio.currentTime;
+    lastProgressAt = Date.now();
+    loadToken += 1;
+    audio.load();
+    playCurrent();
   }
 
   function resumeIfNeeded() {
@@ -2048,8 +2084,12 @@
   }
 
   document.addEventListener("visibilitychange", () => {
+    lastProgressTime = -1;
+    lastProgressAt = Date.now();
     if (document.visibilityState === "visible") scheduleResume(400);
   });
+  window.addEventListener("pageshow", () => scheduleResume(400));
+  window.addEventListener("online", () => scheduleResume(400));
 
   // On phones the element can report "playing" while it silently sits in a dead
   // buffer stall — which is exactly why a song can look like it's running but
@@ -2057,7 +2097,7 @@
   // flag) and revives the song the moment it stops moving, even if no
   // "stalled"/"waiting" event ever fires.
   window.setInterval(() => {
-    if (!musicIntent || audioFailed || autoplayBlocked || audio.ended) {
+    if (document.hidden || !musicIntent || audioFailed || autoplayBlocked || audio.ended) {
       lastProgressTime = -1;
       return;
     }
@@ -2086,17 +2126,24 @@
       return;
     }
 
-    if (now - lastProgressAt > 5000) {
-      lastProgressTime = -1;
+    if (now - lastProgressAt > 30000) {
       recoverPlayback();
     }
-  }, 2000);
+  }, 5000);
 
-  async function toggleMusic() {
-    if (audio.paused) {
+  function toggleMusic() {
+    userActivated = true;
+    if (!musicIntent || autoplayBlocked || audioFailed) {
       musicIntent = true;
+      autoplayBlocked = false;
+      if (audioFailed) {
+        failedTracks.clear();
+        bag = [];
+      }
+      audioFailed = false;
+      failedTracks.delete(trackIndex);
       noteHealthyPlayback();
-      if (!audio.src) {
+      if (!audio.src || audio.error) {
         loadTrack(trackIndex, { autoplay: true });
         return;
       }
@@ -2106,6 +2153,8 @@
       audio.pause();
       setMusicStatus("Music paused. Press play whenever you want it back.");
     }
+    updateMusicUI();
+    saveProgress();
   }
 
   musicToggles.forEach((button) => {
@@ -2133,16 +2182,24 @@
   }
 
   audio.addEventListener("playing", () => {
+    if (!musicIntent) {
+      audio.pause();
+      return;
+    }
     audioFailed = false;
     autoplayBlocked = false;
-    healthySince = Date.now();
+    if (!healthySince) healthySince = Date.now();
+    lastProgressAt = Date.now();
+    lastProgressTime = audio.currentTime;
     const track = MUSIC_TRACKS[trackIndex];
     setMusicStatus(`Now playing “${track.title}”${track.artist ? " — " + track.artist : ""}. 🎶`);
     setMediaSessionState(true);
     updateMusicUI();
+    saveProgress();
   });
 
   audio.addEventListener("pause", () => {
+    healthySince = 0;
     setMediaSessionState(false);
     updateMusicUI();
 
@@ -2159,16 +2216,46 @@
   });
 
   audio.addEventListener("ended", () => {
-    playNext(true);
+    if (musicIntent) playNext(true);
+  });
+
+  function restoreMusicPosition() {
+    if (resumePosition > 0 && Number.isFinite(audio.duration)) {
+      try {
+        audio.currentTime = Math.min(resumePosition, Math.max(0, audio.duration - 0.25));
+        resumePosition = 0;
+      } catch (error) {
+        // Some streams become seekable only after more data arrives.
+      }
+    }
+  }
+  audio.addEventListener("loadedmetadata", restoreMusicPosition);
+  audio.addEventListener("canplay", () => {
+    restoreMusicPosition();
+    updateMusicUI();
+  });
+
+  ["waiting", "stalled"].forEach((type) => {
+    audio.addEventListener(type, () => {
+      if (!musicIntent) return;
+      healthySince = 0;
+      setMusicStatus("Buffering… the music will continue when it's ready. 🎶");
+      updateMusicUI();
+    });
+  });
+  audio.addEventListener("timeupdate", () => {
+    if (Date.now() - lastSavedAt < 5000) return;
+    lastSavedAt = Date.now();
+    saveProgress();
   });
 
   audio.addEventListener("error", handleTrackError);
 
-  // Lock-screen / notification controls (phones keep the media session alive
-  // while these are registered, which stops the music from being killed).
+  // Keep explicit lock-screen pause/play actions in sync with the page.
   if ("mediaSession" in navigator) {
     const mediaHandlers = {
       play: () => {
+        userActivated = true;
         musicIntent = true;
         noteHealthyPlayback();
         playCurrent();
@@ -2176,6 +2263,8 @@
       pause: () => {
         musicIntent = false;
         audio.pause();
+        updateMusicUI();
+        saveProgress();
       },
       nexttrack: () => playNext(true),
       previoustrack: () => playPrev()
@@ -2243,16 +2332,18 @@
     audioFailed = false;
     audioErrorToastShown = false;
     musicIntent = true;
+    userActivated = true;
+    autoplayBlocked = false;
     failedTracks.clear();
     bag = [];
     history = [];
     if (currentBlobUrl) {
-      releaseBlobLater(currentBlobUrl);
+      releaseBlob(currentBlobUrl);
       currentBlobUrl = null;
     }
     trackIndex = Math.floor(Math.random() * MUSIC_TRACKS.length);
     updateMusicUI();
-    loadTrack(trackIndex, { autoplay: true, silent: true });
+    loadTrack(trackIndex, { autoplay: true });
 
     // Reset state.
     state.visited.clear();
