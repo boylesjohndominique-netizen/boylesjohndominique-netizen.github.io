@@ -145,6 +145,7 @@
     if (!heading.hasAttribute("tabindex")) heading.setAttribute("tabindex", "-1");
     window.setTimeout(() => {
       try {
+        if (screen.hidden) return;
         heading.focus({ preventScroll: true });
       } catch (error) {
         heading.focus();
@@ -314,7 +315,7 @@
 
     window.setTimeout(() => {
       identityCard.classList.remove("is-celebrating");
-      showScreen("secret");
+      if (state.current === "identity") showScreen("secret");
       identityLocked = false;
     }, prefersReducedMotion() ? 0 : 620);
   });
@@ -1452,6 +1453,7 @@
     burstFromElement(giftBox, 44);
 
     window.setTimeout(() => {
+      if (state.current !== "gift") return;
       giftReveal.focus({ preventScroll: true });
       giftReveal.scrollIntoView({
         behavior: prefersReducedMotion() ? "auto" : "smooth",
