@@ -89,10 +89,12 @@
   }
 
   function burst(x, y, count = 34) {
-    if (prefersReducedMotion()) return;
+    if (prefersReducedMotion() || document.hidden) return;
 
     const layer = $("#particleLayer");
     if (!layer) return;
+    count = Math.min(count, window.matchMedia("(pointer: coarse)").matches ? 18 : 34);
+    count = Math.max(0, Math.min(count, 60 - layer.childElementCount));
 
     const colors = ["#c34f63", "#e4c78c", "#7e6aa0", "#f3c9ad", "#d96779", "#c2566b"];
     const startX = typeof x === "number" ? x : window.innerWidth / 2;

@@ -132,6 +132,13 @@ em {
   display: none !important;
 }
 
+/* Background tabs should leave resources available for the soundtrack. */
+body.is-background *,
+body.is-background *::before,
+body.is-background *::after {
+  animation-play-state: paused !important;
+}
+
 ::selection {
   background: rgba(195, 79, 99, 0.22);
   color: var(--burgundy-deep);
@@ -2702,7 +2709,6 @@ main {
   transition:
     transform 0.56s cubic-bezier(0.2, 0.8, 0.2, 1),
     opacity 0.42s ease;
-  will-change: transform, opacity;
 }
 
 .reasons-stack.is-instant .reason-card,
@@ -2713,6 +2719,11 @@ main {
 .reason-card.is-top {
   pointer-events: auto;
   cursor: grab;
+}
+
+.reason-card.is-top,
+.reason-card.is-flying {
+  will-change: transform, opacity;
 }
 
 .reason-card.is-dragging {
