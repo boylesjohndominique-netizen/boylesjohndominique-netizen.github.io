@@ -76,9 +76,12 @@ async function chapter(page, name) {
 }
 async function unlock(page) {
   await activate(page.locator("#openSurprise"));
+  await page.waitForFunction(() => document.activeElement === document.querySelector("#identity-title"));
   await activate(page.locator("#yesBtn"));
+  await page.waitForFunction(() => document.activeElement === document.querySelector("#secret-title"));
   await page.locator("#secretAnswer").fill("babyyyy");
   await activate(page.locator("#secretForm button[type=submit]"));
+  await page.waitForFunction(() => document.activeElement === document.querySelector("#secretSuccessTitle"));
   await activate(page.locator("#enterSurprise"));
 }
 
@@ -135,11 +138,11 @@ async function flow(browserType, options, label) {
     await chapter(page, "letter");
     await activate(page.locator("#letterNext"));
     check((await page.locator("#letterProgressText").textContent()).includes("2"), "letter advances");
-    await page.reload();
-    check(await page.locator("#screen-letter").isVisible(), "reload restores chapter");
-    check((await page.locator("#letterProgressText").textContent()).includes("2"), "reload restores letter page");
+    await page.goto(base);
+    check(await page.locator("#screen-letter").isVisible(), "returning to the page restores chapter");
+    check((await page.locator("#letterProgressText").textContent()).includes("2"), "returning restores letter page");
     await activate(page.locator("#musicToggle"));
-    await waitFor(page, () => !document.querySelector("audio").paused, "music resumes with one tap after reload");
+    await waitFor(page, () => !document.querySelector("audio").paused, "music resumes with one tap after returning");
     await activate(page.locator("#musicToggle"));
     await chapter(page, "memories");
     for (let i = 0; i < 8; i++) {
@@ -153,8 +156,8 @@ async function flow(browserType, options, label) {
     await page.locator("#reasonsGrid").dispatchEvent("pointerdown", { pointerId: 1, clientX: 100, clientY: 100, button: 0 });
     await page.locator("#reasonsGrid").dispatchEvent("pointercancel", { pointerId: 1 });
     check((await page.locator("#reasonsStatus").textContent()).includes("Reason 2"), "cancelled touch does not advance reasons");
-    await page.reload();
-    check((await page.locator("#reasonsStatus").textContent()).includes("Reason 2"), "reason survives reload");
+    await page.goto(base);
+    check((await page.locator("#reasonsStatus").textContent()).includes("Reason 2"), "reason survives returning to the page");
     await chapter(page, "love");
     await activate(page.locator("#measureBtn"));
     await waitFor(page, () => document.querySelector("#lovePercent").textContent === "∞%", "love meter completes");
@@ -165,7 +168,7 @@ async function flow(browserType, options, label) {
     await activate(page.locator("#giftBox"));
     await activate(page.locator("#giftMore"));
     check(await page.locator("#giftExtra").isVisible(), "gift extra opens");
-    await page.reload();
+    await page.goto(base);
     check(await page.locator("#screen-gift").isVisible(), "gift chapter restores");
     check(await page.locator("#giftExtra").isVisible(), "opened gift restores");
     await chapter(page, "memories");
@@ -174,6 +177,20 @@ async function flow(browserType, options, label) {
     await activate(page.locator("#dialogClose"));
     await chapter(page, "final");
     check(await page.evaluate(() => document.querySelector("audio").paused), "navigation respects deliberate pause");
+    await page.reload();
+    check(await page.locator("#screen-welcome").isVisible(), "browser reload restarts at welcome");
+    check(await page.evaluate(() => {
+      const $ = (selector) => document.querySelector(selector);
+      return $("#letterProgressText").textContent === "Page 1 of 4" &&
+        $("#reasonsStatus").textContent.startsWith("Reason 1 ") &&
+        !$("#secretCard").hidden && $("#secretSuccess").hidden &&
+        $("#giftReveal").hidden && $("#giftExtra").hidden &&
+        $("#lovePercent").textContent === "0%" && !$("#loveYes").disabled &&
+        $("audio").paused && $("audio").currentTime === 0 &&
+        $("audio").volume === 0.45 && $("#topbar").hidden && window.scrollY === 0;
+    }), "browser reload resets questions, chapters, gifts, game, and music");
+    await unlock(page);
+    await chapter(page, "final");
     await activate(page.locator("#replayBtn"));
     check(await page.locator("#screen-welcome").isVisible(), "explicit replay returns to welcome");
     await page.reload();
@@ -189,7 +206,7 @@ async function flow(browserType, options, label) {
     }
     check(errors.length === 0, `no JavaScript errors: ${errors.join(", ")}`);
     await context.close();
-    console.log(`${label}: main flow, 13 songs, reload recovery, touch cancellation, and responsive checks passed`);
+    console.log(`${label}: main flow, 13 songs, reload reset, return recovery, touch cancellation, and responsive checks passed`);
   } finally { await browser.close(); }
 }
 
@@ -267,9 +284,9 @@ async function slowMusic() {
       "finished song automatically advances to the next track");
     await page.evaluate(() => { document.querySelector("audio").currentTime = 20; });
     await activate(page.locator("#musicToggle"));
-    await page.reload();
-    await waitFor(page, () => document.querySelector("audio").currentTime >= 19.5, "song position survives reload");
-    check(await page.evaluate(() => document.querySelector("audio").paused), "saved pause survives reload");
+    await page.goto(base);
+    await waitFor(page, () => document.querySelector("audio").currentTime >= 19.5, "song position survives returning to the page");
+    check(await page.evaluate(() => document.querySelector("audio").paused), "saved pause survives returning to the page");
 
     // Freeze the media clock to simulate a stream that claims to be playing
     // but supplies no audio, and fast-forward only the browser's timers.

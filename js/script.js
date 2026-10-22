@@ -19,7 +19,13 @@
   let progressReady = false;
   let savedVisit = null;
   try {
-    savedVisit = JSON.parse(sessionStorage.getItem(VISIT_KEY));
+    const navigation = performance.getEntriesByType("navigation")[0];
+    const isReload = navigation ? navigation.type === "reload" : performance.navigation?.type === 1;
+    if (isReload) {
+      history.scrollRestoration = "manual";
+      window.scrollTo(0, 0);
+      sessionStorage.removeItem(VISIT_KEY);
+    } else savedVisit = JSON.parse(sessionStorage.getItem(VISIT_KEY));
     if (savedVisit?.version !== 1) savedVisit = null;
   } catch (error) {
     // Private browsing or disabled storage must never stop the experience.
@@ -2408,7 +2414,7 @@
 
   replayBtn.addEventListener("click", resetExperience);
 
-  /* ---------- Recover this tab after a refresh or an iPhone tab reload ---------- */
+  /* ---------- Recover a returning tab; explicit browser reloads start fresh ---------- */
   function saveProgress() {
     if (!progressReady) return;
     const snapshot = {

@@ -193,10 +193,13 @@ The play/pause button also cancels playback while loading, and selecting the cur
 its position. Switching chapters does not change the audio source.
 
 **Returning to the page:** this tab remembers the current chapter, letter page, reasons card,
-opened gift, discoveries, song, playback position, and volume in `sessionStorage`. A refresh or
-an iPhone tab reload restores that progress; tap play if Safari needs a fresh gesture. Deliberate
-pauses stay paused. **Replay from the start** resets the saved experience. This is temporary data
-in your browser tab and is never sent to a server. Storage being blocked does not disable the site.
+opened gift, discoveries, song, playback position, and volume in `sessionStorage`. Returning to
+the page can restore that progress; tap play if Safari needs a fresh gesture. Deliberate pauses
+stay paused. **The browser's Reload/Refresh button restarts the entire experience**, including
+the welcome screen, questions, chapters, gifts, and music. Navigation reported by the browser as
+a reload always starts fresh. **Replay from the start** also resets the saved experience.
+This is temporary data in your browser tab and is never sent to a server. Storage being blocked
+does not disable the site.
 
 The 3D heart is initialized only when its chapter opens. Phones use a lower graphics resolution,
 simpler geometry, fewer decorations, and a 30 fps cap. Rendering stops outside that chapter or
@@ -403,7 +406,7 @@ The current palette is designed for dark ink on cream and white on burgundy/rose
 - There is no server, database, analytics, or tracking.
 - It does not request camera, microphone, or location access.
 - It does not use cookies or local storage.
-- It uses temporary `sessionStorage` in the current tab to restore your place after a reload.
+- It uses temporary `sessionStorage` to remember your place when returning; browser reload clears it.
 - The secret question is a playful interaction, **not real authentication** and not a way to
   protect private information.
 - Do not put private addresses, passwords, financial details, or other sensitive information
@@ -595,7 +598,7 @@ node tests/browser-regression.cjs
 ```
 
 The suite checks all 13 real MP3 files, chapter controls, letters, dialogs, touch cancellation,
-saved progress, explicit replay, layouts from 320–1440 px, missing music, blocked storage,
+saved progress, browser reload resetting everything, explicit replay, layouts from 320–1440 px, missing music, blocked storage,
 slow downloads, pause during loading, rapid song selection, playback position restoration,
 bounded stall recovery, and the mobile 3D lifecycle. Chromium covers pointer/touch interactions;
 Windows WebKit uses keyboard activation because its high-DPI click coordinates can be inconsistent.
