@@ -2990,6 +2990,17 @@ main {
   height: 100%;
 }
 
+.love3d__fallback {
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+
+.love3d__fallback-heart {
+  transform: scale(var(--heart-scale, 1));
+  transform-origin: 120px 105px;
+}
+
 .love3d__hint {
   position: absolute;
   left: 50%;
@@ -3005,6 +3016,15 @@ main {
 }
 
 .love3d--off {
+  cursor: default;
+}
+
+.love3d--off .love3d__fallback {
+  display: block;
+}
+
+.love3d--off .love3d__canvas,
+.love3d--off .love3d__hint {
   display: none;
 }
 
@@ -4272,6 +4292,84 @@ main {
   .countdown__value {
     font-size: 1.25rem;
   }
+}
+
+/* Mobile graphics budget. Avoid filtered, full-page compositing surfaces on
+   high-DPI phones; gradients keep the same palette without GPU blur buffers. */
+@media (any-pointer: coarse), (max-width: 820px) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* The full-viewport SVG noise filter and multiply blend otherwise stay
+     composited above every chapter, including long letters and scrapbooks. */
+  body::after {
+    display: none;
+  }
+
+  .ambient__wash,
+  .envelope,
+  .success-burst__cat,
+  .art-card__glow,
+  .cake-art,
+  .memory-card__img,
+  .reasons-deck__glow,
+  .love-meter__heart,
+  .game-response__face,
+  .gift__box,
+  .gift__glow {
+    filter: none;
+  }
+
+  .topbar__inner,
+  .chapter-nav,
+  .card,
+  .toast {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .topbar__inner,
+  .chapter-nav {
+    background: #fffaf3;
+  }
+
+  .detail-dialog::backdrop {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .ambient__hearts {
+    display: none;
+  }
+
+  .screen.is-active,
+  .letter-page.is-active,
+  .letter-page.is-active p,
+  .envelope,
+  .art-card,
+  .sparkle,
+  .success-burst__ring,
+  .success-burst__cat,
+  .heart-beat {
+    animation: none;
+  }
+
+  .letter-page.is-active p {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .reason-card.is-top {
+    will-change: auto;
+  }
+}
+
+/* Pause decoration while the tab is in the background. */
+body.is-background *,
+body.is-background *::before,
+body.is-background *::after {
+  animation-play-state: paused !important;
 }
 
 /* ---------- 27. Reduced motion ---------- */

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Gochi+Hand&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261022-stability">
+  <link rel="stylesheet" href="css/style.css?v=20261023-mobile-stability">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%97%3C/text%3E%3C/svg%3E">
 </head>
 <body>
@@ -551,7 +551,20 @@
           <h2 class="display display--lg" id="love-title" tabindex="-1">How Much Do I Love You?</h2>
           <p class="section-sub">Let's measure it. Fair warning: the meter might not survive.</p>
 
-          <div class="love3d" id="love3d" aria-hidden="true">
+          <div class="love3d love3d--off" id="love3d" aria-hidden="true">
+            <svg class="love3d__fallback" viewBox="0 0 240 200" focusable="false">
+              <defs>
+                <linearGradient id="loveHeartFill" x1="0" y1="0" x2="1" y2="1">
+                  <stop stop-color="#f2b1c2"/>
+                  <stop offset=".55" stop-color="#d85f78"/>
+                  <stop offset="1" stop-color="#9c3049"/>
+                </linearGradient>
+              </defs>
+              <ellipse cx="120" cy="180" rx="55" ry="7" fill="#ead6d8"/>
+              <path class="love3d__fallback-heart" d="M120 163C95 144 43 112 43 70c0-40 51-53 77-18 26-35 77-22 77 18 0 42-52 74-77 93Z" fill="url(#loveHeartFill)"/>
+              <path d="M62 72c0-22 22-29 34-17" fill="none" stroke="#fff4f7" stroke-width="7" stroke-linecap="round" opacity=".65"/>
+              <g fill="#c2964d"><path d="m30 45 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/><path d="m208 113 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/></g>
+            </svg>
             <canvas class="love3d__canvas" id="love3dCanvas"></canvas>
             <span class="love3d__hint">drag to spin · pinch to zoom</span>
           </div>
@@ -727,9 +740,8 @@
     </div>
   </dialog>
 
-  <audio id="audio" preload="auto" playsinline></audio>
-  <script src="js/script.js?v=20261022-letter-scroll" defer></script>
-  <script src="js/vendor/three.min.js" defer></script>
-  <script src="js/love3d.js?v=20261022-stability" defer></script>
+  <audio id="audio" preload="metadata" playsinline></audio>
+  <script src="js/script.js?v=20261023-mobile-stability" defer></script>
+  <script src="js/love3d.js?v=20261023-mobile-stability" defer></script>
 </body>
 </html>

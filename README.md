@@ -524,6 +524,31 @@ tab for deployment status.
 
 ## Troubleshooting
 
+### iPhone Safari says a problem occurred after browsing
+
+This can indicate Safari terminating the page under memory or graphics pressure.
+Moving the same files to another static host does not reduce that pressure.
+The October 23 mobile stability changes reduce the work the page asks Safari to do:
+
+- Phones and viewports up to 820 px use an SVG heart with a working love meter,
+  without downloading Three.js or allocating WebGL. Desktop 3D loads on demand.
+- Mobile backgrounds, navigation, cards, and dialogs avoid GPU blur filters;
+  the full-screen filtered noise/blend overlay is disabled.
+  The letter displays without animated text masks or a full-chapter transform.
+- Scrapbook cards use 640 px thumbnails in `assets/images/thumbnails/`. Their
+  decoded pixel footprint is about 12 MB instead of 78 MB for all ten originals.
+  Dialogs still open original photos and remove their image elements on close.
+- Audio preloads metadata until playback starts. Background decorative animations pause.
+
+When replacing a photo in `assets/images/our-pictures/`, also replace its matching
+thumbnail with a JPEG of the same filename, scaled to at most 640 px on its longest
+side. Keep the thumbnail folder in the GitHub deployment.
+
+After deployment, close the old Safari tab and open the website again. The CSS and
+JavaScript URLs carry a new version so the updated files are requested.
+Final verification still needs a physical iPhone: desktop WebKit and phone emulation
+cannot reproduce the operating system's exact memory limits.
+
 ### Photos are not showing
 
 - Check that the filenames match exactly, including capitalization:
@@ -600,9 +625,17 @@ node tests/browser-regression.cjs
 The suite checks all 13 real MP3 files, chapter controls, letters, dialogs, touch cancellation,
 saved progress, browser reload resetting everything, explicit replay, layouts from 320–1440 px, missing music, blocked storage,
 slow downloads, pause during loading, rapid song selection, playback position restoration,
-bounded stall recovery, and the mobile 3D lifecycle. Chromium covers pointer/touch interactions;
+bounded stall recovery, desktop 3D loading/context recovery, and mobile stability with normal
+motion enabled. Mobile checks repeat chapter navigation, open original photos, complete the
+love meter without WebGL, and dwell for another 60 seconds in both browser engines.
+Chromium covers pointer/touch interactions;
 Windows WebKit uses keyboard activation because its high-DPI click coordinates can be inconsistent.
 These browser checks do not replace a final test on a physical iPhone over its actual connection.
+
+Some Windows WebKit runtimes report MP3 as supported but fail even in a standalone
+audio player. For that environment only, set `WYN_SKIP_WEBKIT_AUDIO=1` when running
+the suite to skip WebKit's audio assertions; Chromium still tests all 13 songs,
+buffering, pause/resume, and recovery. This does not change the website's player.
 
 ### Flows to try
 

@@ -23,7 +23,11 @@
     const isReload = navigation ? navigation.type === "reload" : performance.navigation?.type === 1;
     if (isReload) {
       history.scrollRestoration = "manual";
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      // Safari may restore the old scroll offset after deferred scripts run.
+      window.addEventListener("pageshow", () => {
+        requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: "instant" }));
+      }, { once: true });
       sessionStorage.removeItem(VISIT_KEY);
     } else savedVisit = JSON.parse(sessionStorage.getItem(VISIT_KEY));
     if (savedVisit?.version !== 1) savedVisit = null;
@@ -109,8 +113,9 @@
 
     const layer = $("#particleLayer");
     if (!layer) return;
-    count = Math.min(count, window.matchMedia("(pointer: coarse)").matches ? 18 : 34);
-    count = Math.max(0, Math.min(count, 60 - layer.childElementCount));
+    const mobile = window.matchMedia("(any-pointer: coarse), (max-width: 820px)").matches;
+    count = Math.min(count, mobile ? 12 : 34);
+    count = Math.max(0, Math.min(count, (mobile ? 24 : 60) - layer.childElementCount));
 
     const colors = ["#c34f63", "#e4c78c", "#7e6aa0", "#f3c9ad", "#d96779", "#c2566b"];
     const startX = typeof x === "number" ? x : window.innerWidth / 2;
@@ -219,7 +224,7 @@
       updateChapterUI(name);
     }
 
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 
     if (options.focus !== false) {
       focusScreenHeading(target);
@@ -708,7 +713,7 @@
         <span class="memory-card__frame">
           <span class="memory-card__tape" aria-hidden="true"></span>
           <span class="memory-card__img-wrap">
-            <img class="memory-card__img" src="${memory.image}" alt="${memory.alt}"
+            <img class="memory-card__img" src="${memory.image.replace('/our-pictures/', '/thumbnails/')}" alt="${memory.alt}"
               width="900" height="1200" loading="lazy" decoding="async">
             <span class="memory-card__fallback" aria-hidden="true">
               ♡<span>our photo goes here</span>
@@ -801,6 +806,8 @@
       detailDialog.removeAttribute("open");
       document.body.classList.remove("modal-open");
     }
+    // Release the full-size photo when the dialog closes; cards use thumbnails.
+    dialogMedia.replaceChildren();
   }
 
   function setDialogImage(image) {
@@ -861,6 +868,7 @@
 
   detailDialog.addEventListener("close", () => {
     document.body.classList.remove("modal-open");
+    dialogMedia.replaceChildren();
   });
 
   detailDialog.addEventListener("cancel", () => {
@@ -1657,7 +1665,7 @@
 
   audio.volume = 0.45;
   audio.loop = false;
-  audio.preload = "auto";
+  audio.preload = "metadata";
 
   const trackLabel = (track) => (track.artist ? `${track.title} — ${track.artist}` : track.title);
 

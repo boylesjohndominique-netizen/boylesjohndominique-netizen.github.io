@@ -10,14 +10,26 @@
   const canvas = document.getElementById("love3dCanvas");
   if (!container || !canvas) return;
 
-  const THREE = window.THREE;
-  if (!THREE) {
-    container.classList.add("love3d--off");
+  // Phones get a vector heart: no WebGL context, textures, or render loop.
+  // Width also covers small browser windows whose pointer is reported as fine.
+  const mobile = window.matchMedia("(any-pointer: coarse), (max-width: 820px)").matches;
+  if (mobile) {
+    window.Love3D = {
+      setActive() {},
+      setProgress(value) {
+        const progress = Math.min(100, Math.max(0, Number(value) || 0));
+        container.style.setProperty("--heart-scale", 1 + progress / 1000);
+      },
+      celebrate() {},
+      reset() { container.style.removeProperty("--heart-scale"); }
+    };
+    window.Love3D.setProgress(document.getElementById("loveBar")?.value);
     return;
   }
 
+  let THREE = window.THREE;
+  let loading = false;
   const reducedQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const mobile = window.matchMedia("(pointer: coarse)").matches;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
   let ready = false;
@@ -264,6 +276,7 @@
     lavLight.position.set(3, -0.6, 2.4);
     scene.add(lavLight);
 
+    container.classList.remove("love3d--off");
     if (typeof ResizeObserver === "function") new ResizeObserver(resize).observe(container);
     else window.addEventListener("resize", resize, { passive: true });
     resize();
@@ -485,6 +498,23 @@
   }
 
   function init() {
+    // Load the optional desktop renderer only when this chapter is opened.
+    // The vector heart remains visible if the script or graphics driver fails.
+    if (!THREE) {
+      if (loading) return;
+      loading = true;
+      const script = document.createElement("script");
+      script.src = "js/vendor/three.min.js";
+      script.onload = () => {
+        loading = false;
+        THREE = window.THREE;
+        if (!THREE) failed = true;
+        else if (active) init();
+      };
+      script.onerror = () => { loading = false; failed = true; };
+      document.head.appendChild(script);
+      return;
+    }
     try {
       build();
       bindEvents();
