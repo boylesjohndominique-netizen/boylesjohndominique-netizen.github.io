@@ -201,9 +201,7 @@ a reload always starts fresh. **Replay from the start** also resets the saved ex
 This is temporary data in your browser tab and is never sent to a server. Storage being blocked
 does not disable the site.
 
-The 3D heart is initialized only when its chapter opens. Phones use a lower graphics resolution,
-simpler geometry, fewer decorations, and a 30 fps cap. Rendering stops outside that chapter or
-in a background tab. If WebGL fails, the love meter and its buttons remain usable.
+The Love Meter features a lightweight, accessible interactive heartbeat stage built with responsive SVG and CSS animations (saving over 600 KB of 3D WebGL bundle weight). It features a cardiac double-beat ("lub-dub") rhythm, radiating pulse rings, an animated EKG monitor with real-time BPM tracking that accelerates as love is measured, floating sparkles, and playful tap/hold interactions that spawn floating love messages and emoji bursts. When the love meter overflows to ∞%, the stage enters a celebration mode. The legacy 3D Three.js assets (`js/love3d.js` and `js/vendor/three.min.js`) remain preserved in the repository for reference. Animation automatically pauses outside the love chapter or when the tab is hidden.
 
 ### Use your own songs
 
@@ -625,9 +623,9 @@ node tests/browser-regression.cjs
 The suite checks all 13 real MP3 files, chapter controls, letters, dialogs, touch cancellation,
 saved progress, browser reload resetting everything, explicit replay, layouts from 320–1440 px, missing music, blocked storage,
 slow downloads, pause during loading, rapid song selection, playback position restoration,
-bounded stall recovery, desktop 3D loading/context recovery, and mobile stability with normal
+bounded stall recovery, the interactive heartbeat lifecycle, and mobile stability with normal
 motion enabled. Mobile checks repeat chapter navigation, open original photos, complete the
-love meter without WebGL, and dwell for another 60 seconds in both browser engines.
+love meter with lightweight interactive heartbeat rendering, and dwell for another 60 seconds in both browser engines.
 Chromium covers pointer/touch interactions;
 Windows WebKit uses keyboard activation because its high-DPI click coordinates can be inconsistent.
 These browser checks do not replace a final test on a physical iPhone over its actual connection.

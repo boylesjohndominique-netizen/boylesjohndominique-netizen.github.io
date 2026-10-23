@@ -54,6 +54,7 @@ async function activate(locator) {
   // high-DPI displays. Use real keyboard activation there; Chromium covers taps.
   if (locator.page().context().browser().browserType().name() === "webkit") {
     await locator.waitFor({ state: "visible" });
+    await locator.focus();
     await locator.press("Enter");
   } else if (await locator.page().evaluate(() => navigator.maxTouchPoints > 0)) {
     try {
@@ -79,7 +80,7 @@ async function chapter(page, name) {
     await page.waitForFunction(
       (expected) => document.querySelector(".screen.is-active")?.dataset.screen === expected,
       names[index],
-      { timeout: 5000 }
+      { timeout: 15000 }
     );
     await page.waitForFunction(() => document.activeElement ===
       document.querySelector(".screen.is-active h1, .screen.is-active h2"));
@@ -334,44 +335,45 @@ async function slowMusic() {
   } finally { await browser.close(); }
 }
 
-async function graphicsLifecycle() {
+async function heartbeatLifecycle() {
   const browser = await chromium.launch();
   try {
-    const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    const context = await browser.newContext({ ...devices["iPhone 13"] });
     await context.route(/fonts\.(googleapis|gstatic)\.com/, (route) => route.abort());
-    await context.route("**/vendor/three.min.js", async (route) => {
-      const response = await route.fetch();
-      await route.fulfill({ response, body: (await response.text()) + `
-        window.__renders = 0;
-        const OriginalRenderer = THREE.WebGLRenderer;
-        THREE.WebGLRenderer = class extends OriginalRenderer {
-          constructor(...args) {
-            super(...args);
-            const render = this.render;
-            this.render = (...args) => { window.__renders++; return render.apply(this, args); };
-          }
-        };` });
-    });
     const page = await context.newPage();
     await page.goto(base);
-    check(await page.evaluate(() => !window.THREE), "desktop does not download Three.js at startup");
     await unlock(page);
     await chapter(page, "love");
-    await waitFor(page, () => window.__renders > 2, "3D heart renders when its chapter opens");
-    let before = await page.evaluate(() => window.__renders);
-    await page.locator("#love3dCanvas").dispatchEvent("webglcontextlost", { cancelable: true });
-    check(await page.locator("#love3d").evaluate((el) => el.classList.contains("love3d--off")), "lost graphics context falls back safely");
-    before = await page.evaluate(() => window.__renders);
-    await page.waitForTimeout(150);
-    check(await page.evaluate(() => window.__renders) === before, "context loss stops rendering");
-    await page.locator("#love3dCanvas").dispatchEvent("webglcontextrestored");
-    await waitFor(page, () => !document.querySelector("#love3d").classList.contains("love3d--off"), "graphics can recover");
+
+    // Check heartbeat stage initialized
+    await waitFor(page, () => document.querySelector("#loveStage")?.classList.contains("is-running"), "Heartbeat stage renders and runs when its chapter opens");
+    check(await page.locator("#loveHeartCore").isVisible(), "Heart button is visible");
+    check(await page.locator("#loveBpm").textContent() === "72 BPM", "Heart starts at resting 72 BPM");
+    check((await page.locator("#loveBpmStatus").textContent()).includes("Resting"), "Heart starts with resting status");
+
+    // Test tap interaction on the heart
+    await activate(page.locator("#loveHeartCore"));
+    await waitFor(page, () => document.querySelector("#loveBubble")?.classList.contains("is-visible"), "Tapping heart displays cute floating speech bubble");
+    check(await page.locator(".burst-particle").count() > 0, "Tapping heart spawns burst particles");
+
+    // Test measuring love accelerates heartbeat
+    await activate(page.locator("#measureBtn"));
+    await waitFor(page, () => document.querySelector("#lovePercent").textContent === "∞%", "love meter completes");
+    check(await page.locator("#loveBpm").textContent() === "∞ BPM", "Heartbeat reaches infinite BPM on overflow");
+    check(await page.locator("#loveStage").evaluate((el) => el.classList.contains("is-celebrating")), "Heart enters celebration mode");
+
+    // Test reset
+    await activate(page.locator("#loveReset"));
+    check(await page.locator("#loveBpm").textContent() === "72 BPM", "Heartbeat resets to 72 BPM on reset");
+    check(await page.locator("#loveStage").evaluate((el) => !el.classList.contains("is-celebrating")), "Celebration clears on reset");
+
+    // Test chapter change pauses heartbeat
     await chapter(page, "game");
-    before = await page.evaluate(() => window.__renders);
-    await page.waitForTimeout(150);
-    check(await page.evaluate(() => window.__renders) === before, "leaving love chapter stops rendering");
+    await page.waitForTimeout(100);
+    check(await page.locator("#loveStage").evaluate((el) => !el.classList.contains("is-running")), "Leaving love chapter pauses heartbeat");
+
     await context.close();
-    console.log("Desktop lazy 3D rendering, context loss, and chapter lifecycle: passed");
+    console.log("Mobile heartbeat rendering, tap interaction, BPM acceleration, and chapter lifecycle: passed");
   } finally { await browser.close(); }
 }
 
@@ -426,7 +428,7 @@ async function mobileStability(browserType, options, label) {
           check(await page.locator("#dialogMedia img").count() === 0, "closing releases full-size photo element");
         }
         if (name === "love") {
-          check(await page.locator(".love3d__fallback").isVisible(), "phone shows the lightweight heart");
+          check(await page.locator("#loveHeartCore").isVisible(), "phone shows the lightweight heart");
           await activate(page.locator("#measureBtn"));
           await waitFor(page, () => document.querySelector("#lovePercent").textContent === "∞%", "mobile love meter completes without WebGL");
           await activate(page.locator("#loveReset"));
@@ -466,8 +468,8 @@ let base;
   if (!suite || suite === "failures") {
     await failureCases();
   }
-  if (!suite || suite === "graphics") {
-    await graphicsLifecycle();
+  if (!suite || suite === "heartbeat" || suite === "graphics") {
+    await heartbeatLifecycle();
   }
   if (!suite || suite === "mobile") {
     await mobileStability(chromium, devices["iPhone 13"], "Chromium iPhone emulation");

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fbf4ea">
+  <script>if ("scrollRestoration" in history) history.scrollRestoration = "manual";</script>
   <meta name="description" content="A little birthday surprise made with love for Wyn Keysha Gonzales. October 24, 2026.">
   <title>A Little Something for Wyn Keysha 💗</title>
 
@@ -551,22 +552,100 @@
           <h2 class="display display--lg" id="love-title" tabindex="-1">How Much Do I Love You?</h2>
           <p class="section-sub">Let's measure it. Fair warning: the meter might not survive.</p>
 
-          <div class="love3d love3d--off" id="love3d" aria-hidden="true">
-            <svg class="love3d__fallback" viewBox="0 0 240 200" focusable="false">
-              <defs>
-                <linearGradient id="loveHeartFill" x1="0" y1="0" x2="1" y2="1">
-                  <stop stop-color="#f2b1c2"/>
-                  <stop offset=".55" stop-color="#d85f78"/>
-                  <stop offset="1" stop-color="#9c3049"/>
-                </linearGradient>
-              </defs>
-              <ellipse cx="120" cy="180" rx="55" ry="7" fill="#ead6d8"/>
-              <path class="love3d__fallback-heart" d="M120 163C95 144 43 112 43 70c0-40 51-53 77-18 26-35 77-22 77 18 0 42-52 74-77 93Z" fill="url(#loveHeartFill)"/>
-              <path d="M62 72c0-22 22-29 34-17" fill="none" stroke="#fff4f7" stroke-width="7" stroke-linecap="round" opacity=".65"/>
-              <g fill="#c2964d"><path d="m30 45 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/><path d="m208 113 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/></g>
-            </svg>
-            <canvas class="love3d__canvas" id="love3dCanvas"></canvas>
-            <span class="love3d__hint">drag to spin · pinch to zoom</span>
+          <div class="love-stage is-running" id="loveStage" role="region" aria-label="Interactive heartbeat">
+            <!-- Ambient romantic glow & floating stars -->
+            <div class="love-stage__backdrop" aria-hidden="true">
+              <div class="love-stage__glow" id="loveStageGlow"></div>
+              <div class="love-stage__sparkles">
+                <span class="love-stage__sparkle love-stage__sparkle--1">✦</span>
+                <span class="love-stage__sparkle love-stage__sparkle--2">✧</span>
+                <span class="love-stage__sparkle love-stage__sparkle--3">♥</span>
+                <span class="love-stage__sparkle love-stage__sparkle--4">✦</span>
+                <span class="love-stage__sparkle love-stage__sparkle--5">✧</span>
+                <span class="love-stage__sparkle love-stage__sparkle--6">♥</span>
+              </div>
+            </div>
+
+            <!-- Concentric Pulse Ripple Waves -->
+            <div class="love-stage__ripples" aria-hidden="true">
+              <div class="pulse-ring pulse-ring--1"></div>
+              <div class="pulse-ring pulse-ring--2"></div>
+              <div class="pulse-ring pulse-ring--3"></div>
+            </div>
+
+            <!-- Floating Reaction Speech Bubble -->
+            <div class="love-bubble" id="loveBubble" aria-hidden="true">
+              <span class="love-bubble__text" id="loveBubbleText">thump thump! 💓</span>
+            </div>
+
+            <!-- Interactive Main Heart Button -->
+            <button class="love-heart-core" id="loveHeartCore" type="button" aria-label="Heart beating with love — tap to give a beat">
+              <svg class="love-heart-svg" viewBox="0 0 160 148" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                  <!-- Base Heart Gradient -->
+                  <linearGradient id="heartGrad" x1="20" y1="10" x2="140" y2="140" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#ff758c" />
+                    <stop offset="35%" stop-color="#ff4b6e" />
+                    <stop offset="70%" stop-color="#d62246" />
+                    <stop offset="100%" stop-color="#8b112b" />
+                  </linearGradient>
+
+                  <!-- 3D Depth Rim Gradient -->
+                  <radialGradient id="heartDepthGrad" cx="50%" cy="38%" r="65%">
+                    <stop offset="45%" stop-color="#ffffff" stop-opacity="0" />
+                    <stop offset="85%" stop-color="#4d0517" stop-opacity="0.35" />
+                    <stop offset="100%" stop-color="#30030c" stop-opacity="0.65" />
+                  </radialGradient>
+
+                  <!-- Specular Gloss Highlight -->
+                  <linearGradient id="heartGlossGrad" x1="30" y1="15" x2="68" y2="65" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+                    <stop offset="45%" stop-color="#ffffff" stop-opacity="0.38" />
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+                  </linearGradient>
+
+                  <!-- Warm Center Glow -->
+                  <radialGradient id="heartCenterWarmth" cx="48%" cy="42%" r="42%">
+                    <stop offset="0%" stop-color="#ffb8c6" stop-opacity="0.55" />
+                    <stop offset="100%" stop-color="#ff4b6e" stop-opacity="0" />
+                  </radialGradient>
+                </defs>
+
+                <!-- Heart Base Path -->
+                <path class="heart-path-base" d="M 80,140 C 40,108 0,80 0,42 C 0,16 20,0 46,0 C 62,0 73,9 80,20 C 87,9 98,0 114,0 C 140,0 160,16 160,42 C 160,80 120,108 80,140 Z" fill="url(#heartGrad)" />
+
+                <!-- 3D Depth Overlay -->
+                <path d="M 80,140 C 40,108 0,80 0,42 C 0,16 20,0 46,0 C 62,0 73,9 80,20 C 87,9 98,0 114,0 C 140,0 160,16 160,42 C 160,80 120,108 80,140 Z" fill="url(#heartDepthGrad)" />
+
+                <!-- Center Warm Pulse Glow -->
+                <path d="M 80,140 C 40,108 0,80 0,42 C 0,16 20,0 46,0 C 62,0 73,9 80,20 C 87,9 98,0 114,0 C 140,0 160,16 160,42 C 160,80 120,108 80,140 Z" fill="url(#heartCenterWarmth)" />
+
+                <!-- Gloss Specular Sheen (Left Lobe) -->
+                <path class="heart-gloss-left" d="M 46,8 C 28,8 14,20 12,38 C 10,48 14,60 22,70 C 23,60 28,45 38,34 C 47,24 58,18 70,16 C 63,11 55,8 46,8 Z" fill="url(#heartGlossGrad)" />
+
+                <!-- Specular Dot Reflection (Right Lobe) -->
+                <ellipse cx="118" cy="24" rx="14" ry="7" transform="rotate(-25 118 24)" fill="#ffffff" opacity="0.45" />
+                <circle cx="127" cy="33" r="3.5" fill="#ffffff" opacity="0.32" />
+              </svg>
+              <!-- Container for tap burst particles -->
+              <div class="love-heart-core__burst" id="loveHeartBurst" aria-hidden="true"></div>
+            </button>
+
+            <!-- Cardiology / EKG Monitor & Live BPM Status -->
+            <div class="love-ekg" aria-hidden="true">
+              <svg class="love-ekg__line" viewBox="0 0 240 32" preserveAspectRatio="none">
+                <path class="love-ekg__path" d="M 0 16 L 70 16 L 78 8 L 86 24 L 92 4 L 98 28 L 104 16 L 240 16" />
+              </svg>
+              <div class="love-ekg__info">
+                <span class="love-ekg__pulse-dot"></span>
+                <span class="love-ekg__bpm" id="loveBpm">72 BPM</span>
+                <span class="love-ekg__sep">·</span>
+                <span class="love-ekg__status" id="loveBpmStatus">Resting calm beat 💓</span>
+              </div>
+            </div>
+
+            <!-- Subtle interactive hint -->
+            <span class="love-stage__hint" id="loveStageHint">tap the heart to send a beat · hold to hug ✨</span>
           </div>
 
           <div class="love-meter">
@@ -741,7 +820,7 @@
   </dialog>
 
   <audio id="audio" preload="metadata" playsinline></audio>
-  <script src="js/script.js?v=20261023-mobile-stability" defer></script>
-  <script src="js/love3d.js?v=20261023-mobile-stability" defer></script>
+  <script src="js/script.js?v=20261023-heartbeat" defer></script>
+  <script src="js/love-heartbeat.js?v=20261023" defer></script>
 </body>
 </html>

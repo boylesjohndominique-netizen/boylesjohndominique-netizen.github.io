@@ -168,8 +168,10 @@
       try {
         if (screen.hidden) return;
         heading.focus({ preventScroll: true });
+        if (screen.id === "screen-welcome") window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       } catch (error) {
         heading.focus();
+        if (screen.id === "screen-welcome") window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       }
     }, prefersReducedMotion() ? 0 : 80);
   }
@@ -247,8 +249,9 @@
       unlockSecretMemory(false);
     }
 
-    if (window.Love3D) {
-      window.Love3D.setActive(name === "love");
+    const heartbeatController = window.LoveHeartbeat || window.Love3D;
+    if (heartbeatController) {
+      heartbeatController.setActive(name === "love");
     }
     saveProgress();
   }
@@ -1226,7 +1229,8 @@
     loveBar.value = clamped;
     loveHeart.style.left = `${clamped}%`;
     loveBar.setAttribute("aria-valuetext", `${Math.round(clamped)} percent of the meter`);
-    if (window.Love3D) window.Love3D.setProgress(clamped);
+    const heartbeat = window.LoveHeartbeat || window.Love3D;
+    if (heartbeat) heartbeat.setProgress(clamped);
   }
 
   function finishLoveMeter(options = {}) {
@@ -1246,7 +1250,8 @@
     saveProgress();
     if (options.celebrate !== false) {
       burstFromElement(loveBar, 28);
-      if (window.Love3D) window.Love3D.celebrate();
+      const heartbeat = window.LoveHeartbeat || window.Love3D;
+      if (heartbeat) heartbeat.celebrate();
     }
   }
 
@@ -1315,7 +1320,8 @@
     measureBtn.hidden = false;
     measureBtn.disabled = false;
     loveReset.hidden = true;
-    if (window.Love3D) window.Love3D.reset();
+    const heartbeat = window.LoveHeartbeat || window.Love3D;
+    if (heartbeat) heartbeat.reset();
   }
 
   measureBtn.addEventListener("click", measureLove);
